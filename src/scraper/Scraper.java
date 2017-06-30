@@ -95,16 +95,19 @@ public class Scraper {
                             else {
                                 tempCompanyID=cell.getStringCellValue();//System.out.println("-"+temp);
                                 if (tempCompanyID.equals(lastCompanyID)){    //Same company as last round
-                                    cell = r.getCell(5, Row.RETURN_BLANK_AS_NULL);
+                                    cell = r.getCell(5, Row.RETURN_BLANK_AS_NULL);  //contactID
                                     temp=cell.getStringCellValue();
                                     tempContactID=temp;//col 7
-                                    cell = r.getCell(7, Row.RETURN_BLANK_AS_NULL);
+                                    cell = r.getCell(7, Row.RETURN_BLANK_AS_NULL); //FirstName
                                     temp=cell.getStringCellValue();
                                     tempFirst=temp;//col 7
-                                    cell = r.getCell(8, Row.RETURN_BLANK_AS_NULL);
+                                    cell = r.getCell(8, Row.RETURN_BLANK_AS_NULL); //LastName
                                     temp=cell.getStringCellValue();
-                                    tempLast="";//col 8
-                                    tempTitle="";    
+                                    tempLast=temp;//col 8
+                                    cell = r.getCell(9, Row.RETURN_BLANK_AS_NULL); //LastName
+                                    temp=cell.getStringCellValue();
+                                    tempTitle=temp;//col 9
+                                    
                                     companies[compCount-1].addEmployee(tempContactID,tempFirst, tempLast, tempTitle);
                                 }
                                 else{//NEW COMPANY
