@@ -27,9 +27,9 @@ public class Scraper {
      * args[1]=filename;
      */
     public static void main(String[] args) {
-        comp[] companies=new comp[100];
+        comp[] companies=new comp[120];
        //Start with 100 potential arrayists for all the possible company names
-       String file,outputfile,lastCompanyID="-",tempFirst = null,tempLast = null,tempTitle = null,tempContactID;
+       String file,outputfile,lastCompanyID="-",tempFirst = null,tempLast = null,tempTitle = null,tempContactID,tempCompanyID;
        //String arrays for headers of all sheets
        String[][] headers=new String[26][3];
        int i,j, compCount=0,empCount=0, rowCount, colCount;
@@ -93,8 +93,8 @@ public class Scraper {
                                 temp=null; //System.out.printf("null"); 
                             } 
                             else {
-                                temp=cell.getStringCellValue();//System.out.println("-"+temp);
-                                if (temp.equals(lastCompanyID)){    //Same company as last round
+                                tempCompanyID=cell.getStringCellValue();//System.out.println("-"+temp);
+                                if (tempCompanyID.equals(lastCompanyID)){    //Same company as last round
                                     cell = r.getCell(5, Row.RETURN_BLANK_AS_NULL);
                                     temp=cell.getStringCellValue();
                                     tempContactID=temp;//col 7
@@ -108,9 +108,9 @@ public class Scraper {
                                     companies[compCount].addEmployee(tempContactID,tempFirst, tempLast, tempTitle);
                                 }
                                 else{//NEW COMPANY
-                                    if(compCount!=0){//if first do not add
-                                        compCount++;
-                                    }
+                                    System.out.println("HERE");
+                                    comp tempComp=new comp();
+                                    companies[compCount]=tempComp;
                                     cell = r.getCell(2, Row.RETURN_BLANK_AS_NULL);
                                     temp=cell.getStringCellValue();
                                     companies[compCount].accountID=temp;
@@ -135,7 +135,7 @@ public class Scraper {
                                     tempTitle="";        
                                     companies[compCount].addEmployee(tempContactID,tempFirst, tempLast, tempTitle);
                                     lastCompanyID=companies[compCount].accountID;
-                                    
+                                    compCount++;
                                 }
                                         
                             }
@@ -164,7 +164,7 @@ Looking for companies at  [1][9] found: Chief Financial Officer (CFO)
                 }
             }
 /*
- * Sheet 1/ Save headers and add to company Arraylist 
+ * Sheet 1/ Save headers and add to company Arraylist ----------------------------------------------------------------------------
  */
         sheetNum=1;
         spreadsheet = workbook.getSheetAt(sheetNum);
@@ -187,10 +187,9 @@ Looking for companies at  [1][9] found: Chief Financial Officer (CFO)
                         headers[cn][sheetNum]=temp; }
                     if (rowStart+1==rowNum){
                         headers[cn][sheetNum+1]=temp;}
-                    
                 }
             }
-            
+//----------------------------------------------------------------------------------------------------------------------------------            
         //sheet #2 Schhol to Ids.ID=String <14000 ,but close    
         sheetNum=2;
         spreadsheet = workbook.getSheetAt(sheetNum);
@@ -217,6 +216,10 @@ Looking for companies at  [1][9] found: Chief Financial Officer (CFO)
         
         String companyName = "  ";
         
+        for(i=0;i<compCount;i++){
+            System.out.println(i+". :");
+            companies[i].printCompany();
+        }
         
         
     }
