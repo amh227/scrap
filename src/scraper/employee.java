@@ -11,6 +11,7 @@ package scraper;
  * @author angie
  */
 class employee {
+    String contactID;
     String first;
     String last;
     String title;

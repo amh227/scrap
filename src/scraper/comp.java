@@ -13,17 +13,21 @@ import java.util.ArrayList;
  * @author angie
  */
 public class comp {
-    int numEmployees;
+    int numEmployees=0;
+    String accountID;
     String name;
     String locationID;
-    String ContactID;
     String URL;
     employee[] list= new employee[100];
-    public void addEmployee(String first, String last, String title){
+    public void addEmployee(String contactID, String first, String last, String title){
         this.numEmployees++;
+        this.list[this.numEmployees].contactID=contactID;
         this.list[this.numEmployees].first=first;
         this.list[this.numEmployees].last=last;
         this.list[this.numEmployees].title=title;
+   }
+   public void printCompany(comp c){
+       System.out.println("Name: "+c.name+"     Account ID: "+c.accountID);
    }
   
 }

@@ -29,7 +29,7 @@ public class Scraper {
     public static void main(String[] args) {
         comp[] companies=new comp[100];
        //Start with 100 potential arrayists for all the possible company names
-       String file,outputfile,lastCompanyID="-",tempFirst,tempLast,tempTitle;
+       String file,outputfile,lastCompanyID="-",tempFirst = null,tempLast = null,tempTitle = null,tempContactID;
        //String arrays for headers of all sheets
        String[][] headers=new String[26][3];
        int i,j, compCount=0,empCount=0, rowCount, colCount;
@@ -94,14 +94,52 @@ public class Scraper {
                             } 
                             else {
                                 temp=cell.getStringCellValue();//System.out.println("-"+temp);
-                                tempFirst=
-                                tempLast=
-                                tempTitle=        
+                                if (temp.equals(lastCompanyID)){    //Same company as last round
+                                    cell = r.getCell(5, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    tempContactID=temp;//col 7
+                                    cell = r.getCell(7, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    tempFirst=temp;//col 7
+                                    cell = r.getCell(8, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    tempLast="";//col 8
+                                    tempTitle="";        
+                                    companies[compCount].addEmployee(tempContactID,tempFirst, tempLast, tempTitle);
+                                }
+                                else{//NEW COMPANY
+                                    if(compCount!=0){//if first do not add
+                                        compCount++;
+                                    }
+                                    cell = r.getCell(2, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    companies[compCount].accountID=temp;
+                                    cell = r.getCell(3, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    companies[compCount].accountID=temp;
+                                    cell = r.getCell(4, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    companies[compCount].locationID=temp;
+                                    cell = r.getCell(6, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    companies[compCount].URL=temp;
+                                    cell = r.getCell(5, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    tempContactID=temp;//col 7
+                                    cell = r.getCell(7, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    tempFirst=temp;//col 7
+                                    cell = r.getCell(8, Row.RETURN_BLANK_AS_NULL);
+                                    temp=cell.getStringCellValue();
+                                    tempLast="";//col 8
+                                    tempTitle="";        
+                                    companies[compCount].addEmployee(tempContactID,tempFirst, tempLast, tempTitle);
+                                    lastCompanyID=companies[compCount].accountID;
+                                    
+                                }
                                         
                             }
-                            if (temp.equals(lastCompanyID)){
-                                companies[compCount].addEmployee()
-                            } 
+                             
                         }
                         /**
                          * Looking for companies at  [1][2] found: 0013600000q7TV3AAM
