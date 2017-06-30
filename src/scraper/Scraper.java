@@ -87,7 +87,7 @@ public class Scraper {
                     }
                     //employees
                     if (rowNum>rowStart){
-                        System.out.println("Looking for companies at  ["+rowNum+"]["+cn+"]");
+                        //System.out.println("Looking for companies at  ["+rowNum+"]["+cn+"]");
                         if(cn==2){//cn==2 contains companyID
                              if (cell == null) {
                                 temp=null; //System.out.printf("null"); 
@@ -104,11 +104,11 @@ public class Scraper {
                                     cell = r.getCell(8, Row.RETURN_BLANK_AS_NULL);
                                     temp=cell.getStringCellValue();
                                     tempLast="";//col 8
-                                    tempTitle="";        
-                                    companies[compCount].addEmployee(tempContactID,tempFirst, tempLast, tempTitle);
+                                    tempTitle="";    
+                                    companies[compCount-1].addEmployee(tempContactID,tempFirst, tempLast, tempTitle);
                                 }
                                 else{//NEW COMPANY
-                                    System.out.println("HERE");
+                                    //System.out.println("HERE");
                                     comp tempComp=new comp();
                                     companies[compCount]=tempComp;
                                     cell = r.getCell(2, Row.RETURN_BLANK_AS_NULL);
@@ -116,7 +116,7 @@ public class Scraper {
                                     companies[compCount].accountID=temp;
                                     cell = r.getCell(3, Row.RETURN_BLANK_AS_NULL);
                                     temp=cell.getStringCellValue();
-                                    companies[compCount].accountID=temp;
+                                    companies[compCount].name=temp;
                                     cell = r.getCell(4, Row.RETURN_BLANK_AS_NULL);
                                     temp=cell.getStringCellValue();
                                     companies[compCount].locationID=temp;
@@ -141,25 +141,7 @@ public class Scraper {
                             }
                              
                         }
-                        /**
-                         * Looking for companies at  [1][2] found: 0013600000q7TV3AAM
-Looking for companies at  [1][3]
-Looking for companies at  [1][3] found: TUI AG
-Looking for companies at  [1][4]
-Looking for companies at  [1][4] found: a0936000004EFHDAA4
-Looking for companies at  [1][5]
-Looking for companies at  [1][5] found: 0033600000eGHwWAAW
-Looking for companies at  [1][6]
-Looking for companies at  [1][6] found: http://www.tuigroup.com/de-de/investoren/corporate-governance/management
-Looking for companies at  [1][7]
-Looking for companies at  [1][7] found: Horst
-Looking for companies at  [1][8]
-Looking for companies at  [1][8] found: Baier
-Looking for companies at  [1][9]
-Looking for companies at  [1][9] found: Chief Financial Officer (CFO)
-                         */
-                        
-                        System.out.println("Looking for companies at  ["+rowNum+"]["+cn+"] found: "+temp);
+                        //System.out.println("Looking for companies at  ["+rowNum+"]["+cn+"] found: "+temp);
                     }
                 }
             }

@@ -32,7 +32,7 @@ public class comp {
        System.out.println("Name: "+this.name+"     Account ID: "+this.accountID+"    \nlocation ID: "+this.locationID+"    URL: "+this.URL);
        int i=0;
        for (i=0;i<this.numEmployees;i++){
-           System.out.println("numEmployee-  "+i);
+           //System.out.println("numEmployee-  "+i);
            this.list[i].printEmployee();
        }
    }
