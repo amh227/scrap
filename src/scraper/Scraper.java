@@ -61,7 +61,7 @@ public class Scraper {
             int rowEnd =   Math.max(200, spreadsheet.getLastRowNum());
             int lastColumn;
 /** 
- *      Sheet 0
+ *      Sheet 0     ---------------------------------------------------------------------------------------------------------------
  **/ 
             sheetNum=0;
             for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
@@ -140,11 +140,8 @@ public class Scraper {
                                     lastCompanyID=companies[compCount].accountID;
                                     compCount++;
                                 }
-                                        
                             }
-                             
                         }
-                        //System.out.println("Looking for companies at  ["+rowNum+"]["+cn+"] found: "+temp);
                     }
                 }
             }
