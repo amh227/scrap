@@ -16,6 +16,13 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+//---jsoup importss\
+import org.jsoup.Jsoup;
+import org.jsoup.helper.Validate;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 
 public class Scraper {
     int MAXCOLS=26;
@@ -204,6 +211,25 @@ public class Scraper {
         }
         
         
+        String url ="http://www.libertyglobal.com/about-us-officers-directors.html";
+        System.out.println("Fetching %s..."+ url);
+
+        Document doc = Jsoup.connect(url).get();
+        Elements links = doc.select("a[href]");
+        Elements media = doc.select("[src]");
+        Elements imports = doc.select("link[href]");
+
+        print("\nMedia: (%d)", media.size());
+        for (Element src : media) {
+            if (src.tagName().equals("img"))
+                print(" * %s: <%s> %sx%s (%s)",
+                        src.tagName(), src.attr("abs:src"), src.attr("width"), src.attr("height"),
+                        trim(src.attr("alt"), 20));
+            else
+                print(" * %s: <%s>", src.tagName(), src.attr("abs:src"));
+        }
+
+        
     }
     
     
@@ -319,9 +345,14 @@ public class Scraper {
        return headers;
     }
     public void writeFile(String file){
-        
+ 
         
     }
+    
+    
+    
+    
+    
     
     /**
      * EXample from apache poi website
