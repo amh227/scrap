@@ -24,12 +24,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-
 public class Scraper {
     int MAXCOLS=26;
-    
-    
-    
     /**
      * @param args the command line arguments
      * args[1]=filename;
@@ -97,9 +93,7 @@ public class Scraper {
                     if (rowNum>rowStart){
                         //System.out.println("Looking for companies at  ["+rowNum+"]["+cn+"]");
                         if(cn==2){//cn==2 contains companyID
-                             if (cell == null) {
-                                temp=null; //System.out.printf("null"); 
-                            } 
+                            if (cell == null) {temp=null; } 
                             else {
                                 tempCompanyID=cell.getStringCellValue();//System.out.println("-"+temp);
                                 if (tempCompanyID.equals(lastCompanyID)){    //Same company as last round
@@ -115,7 +109,6 @@ public class Scraper {
                                     cell = r.getCell(9, Row.RETURN_BLANK_AS_NULL); //LastName
                                     temp=cell.getStringCellValue();
                                     tempTitle=temp;//col 9
-                                    
                                     companies[compCount-1].addEmployee(tempContactID,tempFirst, tempLast, tempTitle);
                                 }
                                 else{//NEW COMPANY
@@ -142,8 +135,10 @@ public class Scraper {
                                     tempFirst=temp;//col 7
                                     cell = r.getCell(8, Row.RETURN_BLANK_AS_NULL);
                                     temp=cell.getStringCellValue();
-                                    tempLast="";//col 8
-                                    tempTitle="";        
+                                    tempLast=temp;//col 8
+                                     cell = r.getCell(9, Row.RETURN_BLANK_AS_NULL); //LastName
+                                    temp=cell.getStringCellValue();
+                                    tempTitle=temp;//col 9      
                                     companies[compCount].addEmployee(tempContactID,tempFirst, tempLast, tempTitle);
                                     lastCompanyID=companies[compCount].accountID;
                                     compCount++;
@@ -201,49 +196,39 @@ public class Scraper {
            }
        }
        
- //String to look for
+ //Interate through companies and print titles== testing
         
-        
+        String url ="  ";
         String companyName = "  ";
-        
-        for(i=0;i<compCount;i++){
+        for(i=0;i<3/*compCount*/;i++){
             System.out.println(i+". :");
             companies[i].printCompany();
-        }
-        
-       String url ="http://www.libertyglobal.com/about-us-officers-directors.html";
-       // String url ="http://www.tuigroup.com/de-de/investoren/corporate-governance/management";
-       // String html ="http://www.libertyglobal.com/about-us-officers-directors.html";
-       // Document doc = Jsoup.parse(html);
-       
-        Document doc = Jsoup.connect(url)
+            url=companies[i].URL;
+            try{
+                Document doc = Jsoup.connect(url).get();
+                String text = doc.body().text(); 
+                for(j=0;j<companies[i].numEmployees;j++){
+                    //get name of employee
+                    String first= companies[i].list[j].first;
+                    String last = companies[i].list[j].last;
+                    String name = first+" " +last  ;
+                    //look for index of name withing the text
+                    int index= text.indexOf(name);
+                   // System.out.println("Found name \""+name+"\" at index: "+index);
+                    int newIndex=index+name.length()+1;
+                    int titleLength=(companies[i].list[j].title).length();
+                    String foundTitle=text.substring(newIndex, newIndex+titleLength);
+                   // System.out.println("Followed by found title: "+ foundTitle);
+                }
                 
-//                .data("query", "Java")
-//                .userAgent("Mozilla")
-//                .cookie("auth", "token")
-//                .timeout(300000)
-//                .post();
-                .get();
+            }
+            catch(org.jsoup.UnsupportedMimeTypeException UMTE){
+                System.out.println("URL: "+url+  "Invalid for current programming");
+            
+            }
+        }
+      
         
-        
-        
-        String text = doc.body().text(); // "An example link"
-        String title = doc.title();
-//        String linkHref = link.attr("href"); // "http://example.com/"
-//        String linkText = link.text(); // "example""
-
-//        String linkOuterH = link.outerHtml(); 
-                // "<a href="http://example.com"><b>example</b></a>"
-  //      String linkInnerH = link.html(); // "<b>example</b>"
-        
-        
-        System.out.println("TESTING OF JSOUP");
-        System.out.println("text:\n\t"+text);
-        System.out.println("title:\n\t"+title);
-   //     System.out.println("linkHref:\n\t"+linkHref);
-  //      System.out.println("linkText:\n\t"+linkText);
-    //    System.out.println("linkOuterH :\n\t"+linkOuterH );
-      //  System.out.println("linkInnerH  :\n\t"+linkInnerH  );
         
     }
     
@@ -359,43 +344,4 @@ public class Scraper {
        }
        return headers;
     }
-    public void writeFile(String file){
- 
-        
-    }
-    
-    
-    
-    
-    
-    
-    /**
-     * EXample from apache poi website
-     * http://poi.apache.org/spreadsheet/quick-guide.html#Iterator
-     * 
-   public void readme(){
-    int rowStart = Math.min(15, sheet.getFirstRowNum());
-    int rowEnd = Math.max(1400, sheet.getLastRowNum());
-
-    for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
-       Row r = sheet.getRow(rowNum);
-       if (r == null) {
-          // This whole row is empty
-          // Handle it as needed
-          continue;
-       }
-
-       int lastColumn = Math.max(r.getLastCellNum(), MY_MINIMUM_COLUMN_COUNT);
-
-       for (int cn = 0; cn < lastColumn; cn++) {
-          Cell c = r.getCell(cn, Row.RETURN_BLANK_AS_NULL);
-          if (c == null) {
-             // The spreadsheet is empty in this cell
-          } else {
-             // Do something useful with the cell's contents
-          }
-       }
-    }
-   }
-   * */
 }
