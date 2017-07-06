@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
+import static jdk.nashorn.internal.objects.Global.print;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,7 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-//---jsoup importss\
+//---jsoup imports
 import org.jsoup.Jsoup;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
@@ -33,7 +34,7 @@ public class Scraper {
      * @param args the command line arguments
      * args[1]=filename;
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         comp[] companies=new comp[120];
        //Start with 100 potential arrayists for all the possible company names
        String file,outputfile,lastCompanyID="-",tempFirst = null,tempLast = null,tempTitle = null,tempContactID,tempCompanyID;
@@ -210,25 +211,39 @@ public class Scraper {
             companies[i].printCompany();
         }
         
+       String url ="http://www.libertyglobal.com/about-us-officers-directors.html";
+       // String url ="http://www.tuigroup.com/de-de/investoren/corporate-governance/management";
+       // String html ="http://www.libertyglobal.com/about-us-officers-directors.html";
+       // Document doc = Jsoup.parse(html);
+       
+        Document doc = Jsoup.connect(url)
+                
+//                .data("query", "Java")
+//                .userAgent("Mozilla")
+//                .cookie("auth", "token")
+//                .timeout(300000)
+//                .post();
+                .get();
         
-        String url ="http://www.libertyglobal.com/about-us-officers-directors.html";
-        System.out.println("Fetching %s..."+ url);
+        
+        
+        String text = doc.body().text(); // "An example link"
+        String title = doc.title();
+//        String linkHref = link.attr("href"); // "http://example.com/"
+//        String linkText = link.text(); // "example""
 
-        Document doc = Jsoup.connect(url).get();
-        Elements links = doc.select("a[href]");
-        Elements media = doc.select("[src]");
-        Elements imports = doc.select("link[href]");
-
-        print("\nMedia: (%d)", media.size());
-        for (Element src : media) {
-            if (src.tagName().equals("img"))
-                print(" * %s: <%s> %sx%s (%s)",
-                        src.tagName(), src.attr("abs:src"), src.attr("width"), src.attr("height"),
-                        trim(src.attr("alt"), 20));
-            else
-                print(" * %s: <%s>", src.tagName(), src.attr("abs:src"));
-        }
-
+//        String linkOuterH = link.outerHtml(); 
+                // "<a href="http://example.com"><b>example</b></a>"
+  //      String linkInnerH = link.html(); // "<b>example</b>"
+        
+        
+        System.out.println("TESTING OF JSOUP");
+        System.out.println("text:\n\t"+text);
+        System.out.println("title:\n\t"+title);
+   //     System.out.println("linkHref:\n\t"+linkHref);
+  //      System.out.println("linkText:\n\t"+linkText);
+    //    System.out.println("linkOuterH :\n\t"+linkOuterH );
+      //  System.out.println("linkInnerH  :\n\t"+linkInnerH  );
         
     }
     
