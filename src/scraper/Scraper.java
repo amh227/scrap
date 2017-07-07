@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Scanner;
 import static jdk.nashorn.internal.objects.Global.print;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -37,6 +38,7 @@ public class Scraper {
        //String arrays for headers of all sheets
        String[][] headers=new String[26][3];
        int i,j, compCount=0,empCount=0, rowCount, colCount;
+       Scanner input = new Scanner(System.in);
        
        if(args.length == 0){ 
             System.out.println("must enter filename");
@@ -199,6 +201,7 @@ public class Scraper {
  //Interate through companies and print titles== testing
         
         String url ="  ";
+        String userInput;
         String companyName = "  ";
         for(i=0;i<3/*compCount*/;i++){
             System.out.println(i+". :");
@@ -206,7 +209,20 @@ public class Scraper {
             url=companies[i].URL;
             try{
                 Document doc = Jsoup.connect(url).get();
+                Jsoup.connect(url).header("Accept-Language", "en");
+                //get language page is in
+                Element taglang = doc.select("html").first();
+                String language= (taglang.attr("lang"));
+                if (language.contains("en")!=true){
+                    //page is not in english : prompt user to follow url and paste in new english url
+                    System.out.println("\nURL: "+url+" \nNot in english, Please enter english url:");
+                    userInput=input.next();
+                    url=userInput;
+                    doc = Jsoup.connect(url).get();
+                    Jsoup.connect(url).header("Accept-Language", "en");
+                }
                 String text = doc.body().text(); 
+                System.out.println("\n"+text+"\n");
                 for(j=0;j<companies[i].numEmployees;j++){
                     //get name of employee
                     String first= companies[i].list[j].first;
@@ -214,12 +230,19 @@ public class Scraper {
                     String name = first+" " +last  ;
                     //look for index of name withing the text
                     int index= text.indexOf(name);
-                   // System.out.println("Found name \""+name+"\" at index: "+index);
-                    int newIndex=index+name.length()+1;
-                    int titleLength=(companies[i].list[j].title).length();
-                    String foundTitle=text.substring(newIndex, newIndex+titleLength);
-                   // System.out.println("Followed by found title: "+ foundTitle);
+                    if(index!=-1){
+                        System.out.println("Found name \""+name+"\" at index: "+index);
+                        int newIndex=index+name.length()+1;
+                        int titleLength=(companies[i].list[j].title).length();
+                        String foundTitle=text.substring(newIndex, newIndex+titleLength);
+                        System.out.println("\tFollowed by found title: "+ foundTitle);
+                    }
+                    else{
+                        System.out.println("Name: "+name+ "  NOT FOUND");
+                    }
                 }
+                
+                
                 
             }
             catch(org.jsoup.UnsupportedMimeTypeException UMTE){
