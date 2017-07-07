@@ -16,6 +16,6 @@ class employee {
     String last;
     String title;
     public void printEmployee(){
-        System.out.println("-----"+this.first+" "+this.last+" "+this.contactID+" "+this.title);
+        System.out.println("-----"+this.first+" "+this.last+"  Title: "+this.title);
     }
 }

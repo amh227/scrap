@@ -19,6 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 //---jsoup imports
+//https://jsoup.org/apidocs/
 import org.jsoup.Jsoup;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
@@ -203,7 +204,7 @@ public class Scraper {
         String url ="  ";
         String userInput;
         String companyName = "  ";
-        for(i=0;i<3/*compCount*/;i++){
+        for(i=0;i<compCount;i++){
             System.out.println(i+". :");
             companies[i].printCompany();
             url=companies[i].URL;
@@ -227,10 +228,12 @@ public class Scraper {
             //trying to iterate through all strings of document individually    
                 Elements elements = doc.body().select("*");
                 String[] strArr=new String[1000];
+                int iterator=0;
                 for (Element element : elements) {
                     String s=element.ownText();
                     if (s.trim().length() > 0){
-                        System.out.println(element.ownText());
+                        strArr[iterator]=element.ownText();
+                        iterator++;
                     }
                 }
                 String text = doc.body().text(); 
