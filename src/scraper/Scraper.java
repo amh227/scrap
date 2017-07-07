@@ -218,11 +218,24 @@ public class Scraper {
                     System.out.println("\nURL: "+url+" \nNot in english, Please enter english url:");
                     userInput=input.next();
                     url=userInput;
-                    doc = Jsoup.connect(url).get();
-                    Jsoup.connect(url).header("Accept-Language", "en");
+                    try{ doc = Jsoup.connect(url).get();}
+                    catch ( org.jsoup.HttpStatusException |java.lang.IllegalArgumentException IAE){
+                        System.out.println("\nURL INVALID\n");
+                    }
+                }
+                
+            //trying to iterate through all strings of document individually    
+                Elements elements = doc.body().select("*");
+                String[] strArr=new String[1000];
+                for (Element element : elements) {
+                    String s=element.ownText();
+                    if (s.trim().length() > 0){
+                        System.out.println(element.ownText());
+                    }
                 }
                 String text = doc.body().text(); 
                 System.out.println("\n"+text+"\n");
+                int count=0;
                 for(j=0;j<companies[i].numEmployees;j++){
                     //get name of employee
                     String first= companies[i].list[j].first;
@@ -236,9 +249,13 @@ public class Scraper {
                         int titleLength=(companies[i].list[j].title).length();
                         String foundTitle=text.substring(newIndex, newIndex+titleLength);
                         System.out.println("\tFollowed by found title: "+ foundTitle);
+                        count++;
                     }
                     else{
                         System.out.println("Name: "+name+ "  NOT FOUND");
+                    }
+                    if(j==companies[i].numEmployees-1 && count==0){
+                        System.out.println("\nNO EMPLOYEES FOUND - TRY DIFFERENT URL\n");
                     }
                 }
                 
