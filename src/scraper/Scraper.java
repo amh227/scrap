@@ -1,17 +1,11 @@
 package scraper;
 
-import java.io.FileInputStream;
-import java.util.ArrayList;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.Scanner;
-import static jdk.nashorn.internal.objects.Global.print;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -21,7 +15,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 //---jsoup imports
 //https://jsoup.org/apidocs/
 import org.jsoup.Jsoup;
-import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -32,6 +25,7 @@ public class Scraper {
 
     /**
      * @param args the command line arguments args[1]=filename;
+     * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
         comp[] companies = new comp[120];
@@ -39,7 +33,7 @@ public class Scraper {
         String file, outputfile, lastCompanyID = "-", tempFirst = null, tempLast = null, tempTitle = null, tempContactID, tempCompanyID;
         //String arrays for headers of all sheets
         String[][] headers = new String[26][3];
-        int i, j, compCount = 0, empCount = 0, rowCount, colCount;
+        int i, j, compCount = 0, empCount = 0, rowCount, colCount,totalEmployees=0,foundEmployees=0,pageErrors=0;
         Scanner input = new Scanner(System.in);
 
         if (args.length == 0) {
@@ -70,14 +64,11 @@ public class Scraper {
             int rowEnd = Math.max(200, spreadsheet.getLastRowNum());
             int lastColumn;
             /**
-             * Sheet 0
-             * ---------------------------------------------------------------------------------------------------------------
-             *
+             * Sheet 0---------------------------------------------------------------------------------------------------------------
              */
             sheetNum = 0;
             for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
                 Row r = spreadsheet.getRow(rowNum);
-
                 if (r != null) {
                     lastColumn = r.getLastCellNum();
                 } else {
@@ -102,11 +93,10 @@ public class Scraper {
                     if (rowNum > rowStart) {
                         //System.out.println("Looking for companies at  ["+rowNum+"]["+cn+"]");
                         if (cn == 2) {//cn==2 contains companyID
-                            if (cell == null) {
-                                temp = null;
-                            } else {
-                                tempCompanyID = cell.getStringCellValue();//System.out.println("-"+temp);
+                            if (cell == null) { temp = null;} 
+                            else {tempCompanyID = cell.getStringCellValue();//System.out.println("-"+temp);
                                 if (tempCompanyID.equals(lastCompanyID)) {    //Same company as last round
+                                    totalEmployees++;
                                     cell = r.getCell(5, Row.RETURN_BLANK_AS_NULL);  //contactID
                                     temp = cell.getStringCellValue();
                                     tempContactID = temp;//col 7
@@ -121,7 +111,7 @@ public class Scraper {
                                     tempTitle = temp;//col 9
                                     companies[compCount - 1].addEmployee(tempContactID, tempFirst, tempLast, tempTitle);
                                 } else {//NEW COMPANY
-                                    //System.out.println("HERE");
+                                    totalEmployees++;
                                     comp tempComp = new comp();
                                     companies[compCount] = tempComp;
                                     cell = r.getCell(2, Row.RETURN_BLANK_AS_NULL);
@@ -237,12 +227,13 @@ public class Scraper {
 
                     //trying to iterate through all strings of document individually    
                     Elements elements = doc.body().select("*");
-                    String[] strArr = new String[1000];
+                    String[] strArr = new String[10000];
                     int iterator = 0;
                     for (Element element : elements) {
                         String s = element.ownText();
                         if (s.trim().length() > 0) {
                             strArr[iterator] = element.ownText();
+                            System.out.println(" "+s);
                             iterator++;
                         }
                     }
@@ -256,9 +247,15 @@ public class Scraper {
                         String name = first + " " + last;
                         //look for index of name withing the text
                         int index = text.indexOf(name);
-                        //found employee
+                        int index2 = text.indexOf(first);
+                        int index3 = text.indexOf(last);
+                        if (index3-index2<3+first.length()&&index==-1){//name broken by somethingother than one space
+                            index=index2;
+                        }
+//found employee
                         if (index != -1) {
                             System.out.println("Found name \"" + name + "\" at index: " + index);
+                            foundEmployees++;
                             int newIndex = index + name.length() + 1;
                             int titleLength = (companies[i].list[j].title).length();
                             String foundTitle = text.substring(newIndex, newIndex + titleLength);
@@ -266,7 +263,7 @@ public class Scraper {
                             count++;
                             found=1;
                         } 
-                        //didnt find employee
+//didnt find employee
                         else { System.out.println("Name: " + name + "  NOT FOUND");}
                         if (j == companies[i].numEmployees - 1 && count == 0) {
                             System.out.println("\nNO EMPLOYEES FOUND - TRY DIFFERENT URL (or type 0 to quit)\n");
@@ -276,12 +273,23 @@ public class Scraper {
                         }
                     }
                 } 
-                catch (org.jsoup.UnsupportedMimeTypeException UMTE) {
-                    System.out.println("URL: " + url + "Invalid for current programming :: May be pdf formatting");
-                    found = 1;
+                catch (org.jsoup.UnsupportedMimeTypeException| org.jsoup.HttpStatusException UMTE) {
+                    System.out.println("\n::ERROR::URL: " + url + "\nInvalid for current programming :: May be pdf formatting\n");
+//pause program until user validates
+                    System.out.println("\nTRY DIFFERENT URL (or type 0 to quit)\n");
+                    userInput = input.next();
+                    if (userInput.compareTo("0") == 0) { 
+                        found = 1;
+                        pageErrors++;
+                    } 
+                    else {url = userInput;}
+                    
                 }
             }
         }//ends company count
+        System.out.println("\n\n TOTAL EMPLOYEES LISTED: "+totalEmployees);
+        System.out.println("FOUND EMPLOYEES: "+foundEmployees);
+        System.out.println("PAGE ERRORS: "+pageErrors);
     }
 
     //Reads in entire excel file and organize it by companies with all employees listed
@@ -402,5 +410,30 @@ public class Scraper {
             }
         }
         return headers;
+    }
+    
+    
+    public int findIndexNameToTitle(String[] a, String first, String last, String name, String title){
+        int i, ind=0;
+        
+        //find first name first
+        for (i=0;i<a.length;i++){
+            if (a[i].contains(first)){//found first name
+                if (a[i].contains(last)){//contains full name
+                    System.out.println("found full name: "+a[i]+ " at index "+i);
+                }
+                else{//last name not found at index, check next index
+                    if(a[i+1].contains(last)){//last name is in the next index
+                        System.out.println("found full name: "+a[i]+ " and "+a[i+1]+ "  at indexs "+i+ " & "+(i+1));
+                    }
+                    else{
+                        System.out.println("First name found, but last name not, please check URL");
+                    }
+                }
+            }
+        }
+        
+        
+        return ind;
     }
 }
