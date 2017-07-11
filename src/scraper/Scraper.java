@@ -249,10 +249,13 @@ public class Scraper {
                         int index = text.indexOf(name);
                         int index2 = text.indexOf(first);
                         int index3 = text.indexOf(last);
+                        
                         if (index3-index2<3+first.length()&&index==-1){//name broken by somethingother than one space
                             index=index2;
                         }
 //found employee
+                        int indexNameToTitle=findIndexNameToTitle(strArr, iterator, first,  last,  name, companies[i].list[j].title);
+                        /** REPLACING WITH INDEXING METHOD    
                         if (index != -1) {
                             System.out.println("Found name \"" + name + "\" at index: " + index);
                             foundEmployees++;
@@ -263,8 +266,11 @@ public class Scraper {
                             count++;
                             found=1;
                         } 
+                        * 
+                        * 
+                        */
 //didnt find employee
-                        else { System.out.println("Name: " + name + "  NOT FOUND");}
+                        //else { System.out.println("Name: " + name + "  NOT FOUND");}
                         if (j == companies[i].numEmployees - 1 && count == 0) {
                             System.out.println("\nNO EMPLOYEES FOUND - TRY DIFFERENT URL (or type 0 to quit)\n");
                             userInput = input.next();
@@ -413,11 +419,12 @@ public class Scraper {
     }
     
     
-    public int findIndexNameToTitle(String[] a, String first, String last, String name, String title){
+    public static int findIndexNameToTitle(String[] a, int arraySize, String first, String last, String name, String title){
         int i, ind=0;
         
         //find first name first
-        for (i=0;i<a.length;i++){
+        for (i=0;i<arraySize;i++){
+            System.out.println("i: "+i+ "   length:"+a.length);
             if (a[i].contains(first)){//found first name
                 if (a[i].contains(last)){//contains full name
                     System.out.println("found full name: "+a[i]+ " at index "+i);
