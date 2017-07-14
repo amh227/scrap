@@ -255,6 +255,7 @@ public class Scraper {
                         }
 //found employee
                         int indexNameToTitle=findIndexNameToTitle(strArr, iterator, first,  last,  name, companies[i].list[j].title);
+                        if (indexNameToTitle!=0){count++;}
                         /** REPLACING WITH INDEXING METHOD    
                         if (index != -1) {
                             System.out.println("Found name \"" + name + "\" at index: " + index);
@@ -428,17 +429,27 @@ public class Scraper {
             if (a[i].contains(first)){//found first name
                 if (a[i].contains(last)){//contains full name
                     System.out.println("found full name: "+a[i]+ " at index "+i);
+                    ind=i;
                 }
                 else{//last name not found at index, check next index
                     if(a[i+1].contains(last)){//last name is in the next index
                         System.out.println("found full name: "+a[i]+ " and "+a[i+1]+ "  at indexs "+i+ " & "+(i+1));
+                        ind=i+1;
                     }
                     else{
                         System.out.println("First name found, but last name not, please check URL");
+                        return 0;
                     }
                 }
             }
-        }
+        }  
+            //FOUND NAME LOOK FOR TITLE
+            //FIRST CHECK FOLLOWING INDEX
+            //begin by checking for entire string at next index
+            
+            
+            
+        
         
         
         return ind;
