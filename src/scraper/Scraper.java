@@ -446,8 +446,20 @@ public class Scraper {
             //FOUND NAME LOOK FOR TITLE
             //FIRST CHECK FOLLOWING INDEX
             //begin by checking for entire string at next index
-            
-            
+        if (a[ind+1].contains(title)){
+            return 1;
+        }    
+        else{//check next index
+            if (a[ind+2].contains(title)){
+                return 2;
+            }
+            if (a[ind-1].contains(title)){
+                return-1;
+            }
+            else{
+                System.out.println("Name Found::Title Not Found");
+            }
+        }    
             
         
         
