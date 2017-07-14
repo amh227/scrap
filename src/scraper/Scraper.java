@@ -425,7 +425,7 @@ public class Scraper {
         
         //find first name first
         for (i=0;i<arraySize;i++){
-            System.out.println("i: "+i+ "   length:"+a.length);
+            System.out.println("i: "+i+ "   length:"+a.length+"  ::"+a[i]);
             if (a[i].contains(first)){//found first name
                 if (a[i].contains(last)){//contains full name
                     System.out.println("found full name: "+a[i]+ " at index "+i);
@@ -441,29 +441,25 @@ public class Scraper {
                         return 0;
                     }
                 }
+                //FOUND NAME LOOK FOR TITLE
+                //FIRST CHECK FOLLOWING INDEX
+                //begin by checking for entire string at next index
+                if (a[ind+1].contains(title)){
+                    return 1;
+                }    
+                else{//check next index
+                    if (a[ind+2].contains(title)){
+                        return 2;
+                    }
+                    if (a[ind-1].contains(title)){
+                        return-1;
+                    }
+                    else{
+                        System.out.println("Name Found::Title Not Found");
+                    }
+                }      
             }
         }  
-            //FOUND NAME LOOK FOR TITLE
-            //FIRST CHECK FOLLOWING INDEX
-            //begin by checking for entire string at next index
-        if (a[ind+1].contains(title)){
-            return 1;
-        }    
-        else{//check next index
-            if (a[ind+2].contains(title)){
-                return 2;
-            }
-            if (a[ind-1].contains(title)){
-                return-1;
-            }
-            else{
-                System.out.println("Name Found::Title Not Found");
-            }
-        }    
-            
-        
-        
-        
         return ind;
     }
 }
