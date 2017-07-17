@@ -38,7 +38,8 @@ public class Scraper {
 
         if (args.length == 0) {
             System.out.println("must enter filename");
-            file = "Job.xlsx";
+            file="Job80.xlsx";
+           // file = "Job.xlsx";
         } else {
             file = args[1];
         }
@@ -257,8 +258,8 @@ public class Scraper {
 //found employee
 */
                         int indexNameToTitle=findIndexNameToTitle(strArr, iterator, first,  last,  name, companies[i].list[j].title);
-                        if (indexNameToTitle!=0){
-                            if(indexNameToTitle!=-99){
+                        if (indexNameToTitle!=99){//99=name not found
+                            if(indexNameToTitle!=-99){//-99 name found/ title not found
                                 foundTitle++;
                             }
                             foundEmployees++;
@@ -427,7 +428,7 @@ public class Scraper {
     
     
     public static int findIndexNameToTitle(String[] a, int arraySize, String first, String last, String name, String title){
-        int i, ind=0;
+        int i, ind=99;
         Scanner input = new Scanner(System.in);
         System.out.println("Searching for :: "+name+" : "+title);
         //find first name first
@@ -451,6 +452,9 @@ public class Scraper {
                 //FOUND NAME LOOK FOR TITLE
                 //FIRST CHECK FOLLOWING INDEX
                 //begin by checking for entire string at next index
+                if (a[i].contains(title)){
+                    return 0;
+                }
                 if (a[ind+1].contains(title)){
                     return 1;
                 }    
@@ -465,15 +469,23 @@ public class Scraper {
             }
             else{
                 if (a[i].contains(last)){
-                    System.out.println("Found last name, but not first. Do any names in the following replace "+first+" (y/n)\n "+a[i]+" "+a[i-1]+" ");
-                    String yorn=input.next();
-                    if (yorn.equalsIgnoreCase("n")){
-                        return 99;
-                    }
-                    if (yorn.equalsIgnoreCase("y")){
-                        System.out.println("Please enter the name you believe replaces the first name:");
-                        String NewFirst=input.next();
-                        System.out.println("");
+                    int loop =1;
+                    while (loop==1){
+                        System.out.println("Found last name, but not first. Do any names in the following replace "+first+" (y/n)\n "+a[i]+" "+a[i-1]+" ");
+                        String yorn=input.next();
+                        if (yorn.equalsIgnoreCase("n")){
+                            return 99;//exit not found
+                        }
+                        else{
+                            if (yorn.equalsIgnoreCase("y")){
+                                System.out.println("Please enter the name you believe replaces the first name:");
+                                first=input.next();
+                                loop=0;
+                            }
+                            else{
+                                System.out.println("Expected y or n input");
+                            }
+                        }
                     }
                 }
             }
