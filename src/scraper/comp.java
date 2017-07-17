@@ -2,10 +2,13 @@ package scraper;
 
 public class comp {
     int numEmployees=0;
+    String parent;
+    String parentURL;
     String accountID;
     String name;
     String locationID;
     String URL;
+    
     employee[] list= new employee[100];
     public void addEmployee(String contactID, String first, String last, String title){
         employee temp=new employee();
