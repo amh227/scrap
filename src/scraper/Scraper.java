@@ -93,52 +93,83 @@ public class Scraper {
                     //employees
                     if (rowNum > rowStart) {
                         //System.out.println("Looking for companies at  ["+rowNum+"]["+cn+"]");
-                        if (cn == 2) {//cn==2 contains companyID
+                        if (cn == 1) {//cn==2 contains companyID
                             if (cell == null) { temp = null;} 
                             else {tempCompanyID = cell.getStringCellValue();//System.out.println("-"+temp);
                                 if (tempCompanyID.equals(lastCompanyID)) {    //Same company as last round
                                     totalEmployees++;
-                                    cell = r.getCell(5, Row.RETURN_BLANK_AS_NULL);  //contactID
+                                     //7=H=contactID
+                                    cell = r.getCell(7, Row.RETURN_BLANK_AS_NULL);
                                     temp = cell.getStringCellValue();
-                                    tempContactID = temp;//col 7
-                                    cell = r.getCell(7, Row.RETURN_BLANK_AS_NULL); //FirstName
+                                    tempContactID = temp;
+                                    //8=I=first name
+                                    cell = r.getCell(8, Row.RETURN_BLANK_AS_NULL);
                                     temp = cell.getStringCellValue();
-                                    tempFirst = temp;//col 7
-                                    cell = r.getCell(8, Row.RETURN_BLANK_AS_NULL); //LastName
+                                    tempFirst = temp;
+                                    //9=J=lastname
+                                    cell = r.getCell(9, Row.RETURN_BLANK_AS_NULL); 
                                     temp = cell.getStringCellValue();
-                                    tempLast = temp;//col 8
-                                    cell = r.getCell(9, Row.RETURN_BLANK_AS_NULL); //LastName
+                                    tempLast = temp;
+                                    //10=K=title
+                                    cell = r.getCell(10, Row.RETURN_BLANK_AS_NULL); 
                                     temp = cell.getStringCellValue();
-                                    tempTitle = temp;//col 9
+                                    tempTitle = temp;
+                                    
+                                    
                                     companies[compCount - 1].addEmployee(tempContactID, tempFirst, tempLast, tempTitle);
                                 } else {//NEW COMPANY
                                     totalEmployees++;
                                     comp tempComp = new comp();
+                                    System.out.println("compCount="+compCount);
                                     companies[compCount] = tempComp;
-                                    cell = r.getCell(2, Row.RETURN_BLANK_AS_NULL);
+                                    //0=A=employee onPage:itiallyblank
+                                    cell = r.getCell(0, Row.RETURN_BLANK_AS_NULL);
+                                    //temp = cell.getStringCellValue();
+                                    //1=B=accountID
+                                    cell = r.getCell(1, Row.RETURN_BLANK_AS_NULL);
                                     temp = cell.getStringCellValue();
                                     companies[compCount].accountID = temp;
-                                    cell = r.getCell(3, Row.RETURN_BLANK_AS_NULL);
+                                    //2=C=company name
+                                    cell = r.getCell(2, Row.RETURN_BLANK_AS_NULL);
                                     temp = cell.getStringCellValue();
                                     companies[compCount].name = temp;
+                                    //3=D=company locationID
+                                    cell = r.getCell(3, Row.RETURN_BLANK_AS_NULL);
+                                    tempCompanyID = cell.getStringCellValue();
+                                    companies[compCount].locationID = tempCompanyID;    // tempCompanyID 
+                                    //4=E=C-Suite URL
                                     cell = r.getCell(4, Row.RETURN_BLANK_AS_NULL);
                                     temp = cell.getStringCellValue();
-                                    companies[compCount].locationID = temp;
+                                    companies[compCount].URL = temp;
+                                    //5=F=Parent
                                     cell = r.getCell(6, Row.RETURN_BLANK_AS_NULL);
                                     temp = cell.getStringCellValue();
-                                    companies[compCount].URL = temp;
+                                    companies[compCount].parent = temp;
+                                    //6=G=Parent C-Suite URL
                                     cell = r.getCell(5, Row.RETURN_BLANK_AS_NULL);
                                     temp = cell.getStringCellValue();
-                                    tempContactID = temp;//col 7
+                                    companies[compCount].parentURL=temp;
+                                    //7=H=contactID
                                     cell = r.getCell(7, Row.RETURN_BLANK_AS_NULL);
                                     temp = cell.getStringCellValue();
-                                    tempFirst = temp;//col 7
+                                    tempContactID = temp;
+                                    //8=I=first name
                                     cell = r.getCell(8, Row.RETURN_BLANK_AS_NULL);
                                     temp = cell.getStringCellValue();
-                                    tempLast = temp;//col 8
+                                    tempFirst = temp;
+                                    //9=J=lastname
                                     cell = r.getCell(9, Row.RETURN_BLANK_AS_NULL); //LastName
                                     temp = cell.getStringCellValue();
-                                    tempTitle = temp;//col 9      
+                                    tempLast = temp;
+                                    //10=K=title
+                                    cell = r.getCell(10, Row.RETURN_BLANK_AS_NULL); //LastName
+                                    temp = cell.getStringCellValue();
+                                    tempTitle = temp;
+                                    //11=L=updated Title
+                                    //12=M=notes
+                                    //13=N=updatedC-SuiteURL
+                                    
+                                    
                                     companies[compCount].addEmployee(tempContactID, tempFirst, tempLast, tempTitle);
                                     lastCompanyID = companies[compCount].accountID;
                                     compCount++;
@@ -286,7 +317,7 @@ public class Scraper {
                         }
                     }
                 } 
-                catch (org.jsoup.UnsupportedMimeTypeException| org.jsoup.HttpStatusException UMTE) {
+                catch (org.jsoup.UnsupportedMimeTypeException| javax.net.ssl.SSLHandshakeException |org.jsoup.HttpStatusException UMTE) {
                     System.out.println("\n::ERROR::URL: " + url + "\nInvalid for current programming :: May be pdf formatting\n");
 //pause program until user validates
                     System.out.println("\nTRY DIFFERENT URL (or type 0 to quit)\n");
@@ -471,7 +502,14 @@ public class Scraper {
                 if (a[i].contains(last)){
                     int loop =1;
                     while (loop==1){
+                        if(i!=0){
                         System.out.println("Found last name, but not first. Do any names in the following replace "+first+" (y/n)\n "+a[i]+" "+a[i-1]+" ");
+                        }
+                        else{
+                        System.out.println("Found last name, but not first. Do any names in the following replace "+first+" (y/n)\n "+a[i]+"  ");
+                            
+                        }
+                        
                         String yorn=input.next();
                         if (yorn.equalsIgnoreCase("n")){
                             return 99;//exit not found
