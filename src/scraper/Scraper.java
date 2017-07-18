@@ -120,7 +120,7 @@ public class Scraper {
                                 } else {//NEW COMPANY
                                     totalEmployees++;
                                     comp tempComp = new comp();
-                                    System.out.println("compCount="+compCount);
+                                   // System.out.println("compCount="+compCount);
                                     companies[compCount] = tempComp;
                                     //0=A=employee onPage:itiallyblank
                                     cell = r.getCell(0, Row.RETURN_BLANK_AS_NULL);
@@ -277,17 +277,7 @@ public class Scraper {
                         String first = companies[i].list[j].first;
                         String last = companies[i].list[j].last;
                         String name = first + " " + last;
-                        //look for index of name withing the text
-                        /**
-                        int index = text.indexOf(name);
-                        int index2 = text.indexOf(first);
-                        int index3 = text.indexOf(last);
-                        
-                        if (index3-index2<3+first.length()&&index==-1){//name broken by something other than one space
-                            index=index2;
-                        }
-//found employee
-*/
+                       
                         int indexNameToTitle=findIndexNameToTitle(strArr, iterator, first,  last,  name, companies[i].list[j].title);
                         if (indexNameToTitle!=99){//99=name not found
                             if(indexNameToTitle!=-99){//-99 name found/ title not found
@@ -296,19 +286,6 @@ public class Scraper {
                             foundEmployees++;
                             count++;
                         }
-                        /** REPLACING WITH INDEXING METHOD    
-                        if (index != -1) {
-                           
-                            String foundTitle = text.substring(newIndex, newIndex + titleLength);
-                            System.out.println("\tFollowed by found title: " + foundTitle);
-                            count++;
-                            found=1;
-                        } 
-                        * 
-                        * 
-                        */
-//didnt find employee   int k;
-                        //else { System.out.println("Name: " + name + "  NOT FOUND");}
                         if (j == companies[i].numEmployees - 1 && count == 0) {
                             System.out.println("\nNO EMPLOYEES FOUND - TRY DIFFERENT URL (or type 0 to quit)\n");
                             userInput = input.next();
@@ -464,7 +441,7 @@ public class Scraper {
         System.out.println("Searching for :: "+name+" : "+title);
         //find first name first
         for (i=0;i<arraySize;i++){
-            System.out.println("i: "+i+ "   length:"+a.length+"  ::"+a[i]);
+            //System.out.println("i: "+i+"::"+a[i]);
             if (a[i].contains(first)){//found first name
                 if (a[i].contains(last)){//contains full name
                     System.out.println("found full name: "+a[i]+ " at index "+i);
