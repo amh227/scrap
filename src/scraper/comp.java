@@ -8,8 +8,9 @@ public class comp {
     String name;
     String locationID;
     String URL;
-    
     employee[] list= new employee[100];
+    
+    
     public void addEmployee(String contactID, String first, String last, String title){
         employee temp=new employee();
         this.list[this.numEmployees]=temp;
@@ -19,7 +20,9 @@ public class comp {
         this.list[this.numEmployees].title=title;
         this.numEmployees++;
    }
-   public void printCompany(){
+   
+    
+    public void printCompany(){
        System.out.println("Name: "+this.name+"     Account ID: "+this.accountID+"    \nlocation ID: "+this.locationID+"    URL: "+this.URL);
        int i=0;
        for (i=0;i<this.numEmployees;i++){
@@ -27,9 +30,16 @@ public class comp {
            this.list[i].printEmployee();
        }
    }
-   public void printAllEmployees(comp c){
+   
+    
+    public void printAllEmployees(comp c){
        System.out.println("Company: "+c.name);
-       
+       for(int i=0;i<c.numEmployees;i++){
+           if(c.list[i].onPage.equalsIgnoreCase("No")){
+                System.out.print("-NOT FOUND-");
+           }
+           System.out.print(" "+c.list[i].first+" "+c.list[i].last+": "+c.list[i].title+" ");
+       }
        
        
        
