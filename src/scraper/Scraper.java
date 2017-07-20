@@ -238,24 +238,14 @@ public class Scraper {
             System.out.println(i + ". :");
             companies[i].printCompany();
             url = companies[i].URL;
-            while (found == 0) {
+            
                 try {
                     Document doc = Jsoup.connect(url).get();
                     Jsoup.connect(url).header("Accept-Language", "en");
                     //get language page is in
                     Element taglang = doc.select("html").first();
                     language = (taglang.attr("lang"));
-                    if (language.contains("en") != true) {
-                        //page is not in english : prompt user to follow url and paste in new english url
-                        System.out.println("\nURL: " + url + " \nNot in english, Please enter english url:");
-                        userInput = input.next();
-                        url = userInput;
-                        try {
-                            doc = Jsoup.connect(url).get();
-                        } catch (org.jsoup.HttpStatusException | java.lang.IllegalArgumentException IAE) {
-                            System.out.println("\nURL INVALID\n");
-                        }
-                    }
+                    
 
                     //trying to iterate through all strings of document individually    
                     Elements elements = doc.body().select("*");
@@ -306,9 +296,20 @@ public class Scraper {
                     else {url = userInput;}
                     
                 }
-            found=1;//if works found loop can be deleted
-            }
+            
+            //end loop for finding all employees :: check for adds
+            
+            
+            
+            
+            
         }//ends company count
+        //begin looking for adds from index to title
+        String[] keywords = new String[12];
+        
+        
+        
+        
         System.out.println("\n\n TOTAL EMPLOYEES LISTED: "+totalEmployees);
         System.out.println("FOUND EMPLOYEES: "+foundEmployees+"   with Title: "+foundTitle);
         System.out.println("PAGE ERRORS: "+pageErrors);
@@ -504,7 +505,25 @@ public class Scraper {
                     }
                 }
             }
-        }  //end arrray search for name;
+        }
+        
+
+
+//end arrray search for name;
         return ind;
     }
+
+    
+    public static comp findAdds(int index, comp c){
+        comp company=c;
+        //list all keywords that would designate an add
+        String[] keywords ={"executive", "founder", "president","board", "member","chief","cio","ceo","coo","cfo",
+           "cto","chro","director","officer","head", "principal","dean" ,"Treasurer","Superintendant"};
+        
+        return company;
+    }
+    public static void outputNewFile(comp[] allCompanies){
+        
+    }
+
 }
