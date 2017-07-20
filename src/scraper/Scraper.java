@@ -21,8 +21,7 @@ import org.jsoup.select.Elements;
 
 public class Scraper {
 
-    int MAXCOLS = 26;
-
+    
     /**
      * @param args the command line arguments args[1]=filename;
      * @throws java.io.IOException
@@ -238,7 +237,7 @@ public class Scraper {
             System.out.println(i + ". :");
             companies[i].printCompany();
             url = companies[i].URL;
-            
+            while (found==0){
                 try {
                     Document doc = Jsoup.connect(url).get();
                     Jsoup.connect(url).header("Accept-Language", "en");
@@ -286,17 +285,21 @@ public class Scraper {
                 } 
                 catch (org.jsoup.UnsupportedMimeTypeException| javax.net.ssl.SSLHandshakeException |org.jsoup.HttpStatusException UMTE) {
                     System.out.println("\n::ERROR::URL: " + url + "\nInvalid for current programming :: May be pdf formatting\n");
-//pause program until user validates
-                    System.out.println("\nTRY DIFFERENT URL (or type 0 to quit)\n");
+                    System.out.println("\nTRY DIFFERENT URL (0 to quit, 1 for manual prompt/entry )\n");
                     userInput = input.next();
                     if (userInput.compareTo("0") == 0) { 
                         found = 1;
                         pageErrors++;
                     } 
-                    else {url = userInput;}
+                    else{
+                        if(userInput.compareTo("1") == 0){
+                            companies[i]=manualEnter(companies[i]);
+                        }
+                        else {url = userInput;}
+                    }
                     
                 }
-            
+            }//end found loop
             //end loop for finding all employees :: check for adds
             
             
@@ -305,7 +308,6 @@ public class Scraper {
             
         }//ends company count
         //begin looking for adds from index to title
-        String[] keywords = new String[12];
         
         
         
@@ -523,7 +525,10 @@ public class Scraper {
         return company;
     }
     public static void outputNewFile(comp[] allCompanies){
-        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  
     }
-
+    private static comp manualEnter(comp company) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
