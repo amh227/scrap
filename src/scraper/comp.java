@@ -27,5 +27,12 @@ public class comp {
            this.list[i].printEmployee();
        }
    }
+   public void printAllEmployees(comp c){
+       System.out.println("Company: "+c.name);
+       
+       
+       
+       
+   }
   
 }

@@ -162,8 +162,6 @@ public class Scraper {
                                     //11=L=updated Title
                                     //12=M=notes
                                     //13=N=updatedC-SuiteURL
-                                    
-                                    
                                     companies[compCount].addEmployee(tempContactID, tempFirst, tempLast, tempTitle);
                                     lastCompanyID = companies[compCount].accountID;
                                     compCount++;
@@ -289,13 +287,16 @@ public class Scraper {
                     else{
                         if(userInput.compareTo("1") == 0){
                             companies[i]=manualEnter(companies[i]);
+                            found=1;
                         }
                         else {url = userInput;}
                     }
                     
                 }
+                
             }//end found loop
             //end loop for finding all employees :: check for adds
+            System.out.println("Company: "+companies[i].name);
             
             
             
