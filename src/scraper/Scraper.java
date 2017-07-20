@@ -22,10 +22,6 @@ import org.jsoup.select.Elements;
 public class Scraper {
 
     
-    /**
-     * @param args the command line arguments args[1]=filename;
-     * @throws java.io.IOException
-     */
     public static void main(String[] args) throws IOException {
         comp[] companies = new comp[120];
         //Start with 100 potential arrayists for all the possible company names
@@ -43,7 +39,6 @@ public class Scraper {
             file = args[1];
         }
 
-        //headers=readFile(file, companies);  //class below
         int sheetNum = 0;
 
         //Need to read in excel sheet and 
@@ -318,124 +313,6 @@ public class Scraper {
     }
 
     //Reads in entire excel file and organize it by companies with all employees listed
-    public static String[][] readFile(String file, ArrayList<comp>[] companies) {
-        int sheetNum = 0;
-        String[] header1 = new String[30];
-        String[] header2 = new String[30];
-        String[] header2b = new String[30];
-        String[][] headers = new String[30][3];
-        int compCount = 0, empCount = 0, i = 0, j = 0, rowCount, colCount;
-        //Need to read in excel sheet and 
-        XSSFRow row;
-        try (FileInputStream fis = new FileInputStream(new File(file))) {
-            // A workbook reference is created from the chosen Excel file.
-            XSSFWorkbook workbook = new XSSFWorkbook(fis);
-            // A spreadsheet object is created to reference the Excel files pages.
-            XSSFSheet spreadsheet;
-            // Iterator for the rows
-            Iterator< Row> rowIterator;
-            // Iterator for the columns
-            Iterator< Cell> cellIterator;
-            spreadsheet = workbook.getSheetAt(sheetNum);
-            //rowIterator = spreadsheet.iterator();
-//Start reading in file//
-            int rowStart = Math.min(0, spreadsheet.getFirstRowNum());
-            int rowEnd = Math.max(200, spreadsheet.getLastRowNum());
-            int lastColumn;
-            /**
-             * Sheet 0
-             *
-             */
-            sheetNum = 0;
-            for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
-                Row r = spreadsheet.getRow(rowNum);
-
-                if (r != null) {
-                    lastColumn = r.getLastCellNum();
-                } else {
-                    continue;
-                }
-                //lastColumn = Math.max(r.getLastCellNum(),26/**MAXCOLS**/);
-                String temp;
-                for (int cn = 0; cn < lastColumn; cn++) {
-                    Cell cell = r.getCell(cn, Row.RETURN_BLANK_AS_NULL);
-                    if (cell == null) {
-                        temp = null;
-                        //System.out.printf("null"); 
-                    } else {
-                        temp = cell.getStringCellValue();
-                        //System.out.println(" "+temp);
-                    }
-                    if (rowStart == rowNum) {
-                        //System.out.println(" in grid "+temp);
-                        headers[cn][sheetNum] = temp;
-                    }
-                    //employees
-                    if (rowNum > rowStart) {
-                        System.out.println("Looking for companies at  [" + rowNum + "][" + cn + "]");
-                        if (cell == null) {
-                            temp = null;
-                            //System.out.printf("null"); 
-                        } else {
-                            temp = cell.getStringCellValue();
-                            //System.out.println("-"+temp);
-                        }
-                    }
-                }
-            }
-            /*
-             * Sheet 2/ Save headers and add to company Arraylist 
-             */
-            sheetNum = 1;
-            spreadsheet = workbook.getSheetAt(sheetNum);
-            int cn = 0;
-            for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
-                Row r = spreadsheet.getRow(rowNum);
-
-                if (r != null) {
-                    lastColumn = r.getLastCellNum();
-                } else {
-                    headers[cn][sheetNum + 1] = null;
-                    continue;
-                }
-                //lastColumn = Math.max(r.getLastCellNum(),26/**MAXCOLS**/);
-                String temp;
-                for (cn = 0; cn < lastColumn; cn++) {
-                    Cell cell = r.getCell(cn, Row.RETURN_BLANK_AS_NULL);
-                    if (cell == null) {
-                        temp = null;
-                    } else {
-                        temp = cell.getStringCellValue();
-                    }
-                    //headers
-                    if (rowStart == rowNum) {
-                        headers[cn][sheetNum] = temp;
-                    }
-                    if (rowStart + 1 == rowNum) {
-                        headers[cn][sheetNum + 1] = temp;
-                    }
-
-                }
-            }
-
-            //sheet #2 Schhol to Ids.ID=String <14000 ,but close    
-            sheetNum = 2;
-            spreadsheet = workbook.getSheetAt(sheetNum);
-            cn = 0;
-
-        } catch (IOException Error) {
-            System.out.println("Error loading the file: " + file);
-        }
-
-        //copy individual headers to headers
-        for (i = 0; i < 15; i++) {
-            System.out.println("\t");
-            for (j = 0; j < 3; j++) {
-                // System.out.print("   "+headers[i][j]);
-            }
-        }
-        return headers;
-    }
     
     
     public static int findIndexNameToTitle(String[] a, int arraySize, String first, String last, String name, String title){
