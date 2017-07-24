@@ -226,6 +226,7 @@ public class Scraper {
         //-------------------------------------------------------iterating companies--------------------------------------------------
         for (i = 0; i < compCount; i++) {
             System.out.println("At Company: "+companies[i].name);
+            int firstRun=0;
             found=0;
             System.out.println(i + ". :");
             companies[i].printCompany();
@@ -247,10 +248,11 @@ public class Scraper {
                         String s = element.ownText();
                         if (s.trim().length() > 0) {
                             strArr[iterator] = element.ownText();
-                            System.out.println(" "+s);
+                            if (firstRun==0){System.out.println(" "+s);}
                             iterator++;
                         }
                     }
+                    firstRun=1;
                     String text = doc.body().text();
                     System.out.println("\n" + text + "\n");
                     count = 0; //count for employeesin individual company::used to return if no employees found
@@ -367,6 +369,16 @@ public class Scraper {
                     if (a[i-1].contains(e.title)){e.IndexNameToTitle=-1;}
                     else{
                         System.out.println("Name Found::Title Not Found");
+                        //print indices around name to give option for title
+                        System.out.println("Do any of the following indices have the title (Enter index or 0 to enter your own)");
+                        System.out.println((startInd+1)+" : "+a[startInd+1]);
+                        System.out.println((startInd+2)+" : "+a[startInd+2]); 
+                        System.out.println((startInd+3)+" : "+a[startInd+3]); 
+                        int tempIndex=input.nextInt();
+                        if (tempIndex!=0){  e.title=a[tempIndex]; }
+                        else{
+                            System.out.println("Please enter title: ");
+                            e.title=input.next();}
                         return e;
                     }
                 }      
