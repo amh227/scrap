@@ -256,12 +256,8 @@ public class Scraper {
                     count = 0; //count for employeesin individual company::used to return if no employees found
     //---------------------------------------------------------------------------------------<EMPLOYEE ITEREATION>------------    
                     for (j = 0; j < companies[i].numEmployees; j++) {
-                        //get name of employee
-                        String first = companies[i].list[j].first;
-                        String last = companies[i].list[j].last;
-                        String name = first + " " + last;
-                       
-                        int indexNameToTitle=findIndexNameToTitle(strArr, iterator, first,  last,  name, companies[i].list[j].title);
+                        companies[i].list[j]=findIndexNameToTitle(strArr, iterator, companies[i].list[j] );
+                        /**
                         if (indexNameToTitle!=99){//99=name not found
                             if(indexNameToTitle!=-99){//-99 name found/ title not found
                                 foundTitle++;
@@ -275,6 +271,7 @@ public class Scraper {
                             if (userInput.compareTo("0") == 0) { found = 1;} 
                             else {url = userInput;}
                         }
+                        * */
                     }
     //----------------------------------------------------------------------------<END EMPLOYEE ITERATIONS>-----------------                
                 } 
@@ -309,80 +306,89 @@ public class Scraper {
         System.out.println("PAGE ERRORS: "+pageErrors);
     }
 //------------------------------------------------------------------------------------------------- <END MAIN> -----------
+  
     
-    public static int findIndexNameToTitle(String[] a, int arraySize, String first, String last, String name, String title){
-        int i, ind=99;
+    /**
+     * 
+     * @param a
+     * @param arraySize
+     * @param e : employee being looked for
+     * @return returns the index between the name and the title of the employee being looked for
+     */
+    public static employee findIndexNameToTitle(String[] a, int arraySize, employee e){
+        int i, startInd=0 ,ind=99;
+        e.IndexNameToTitle=-99;//   set to -99 to use as baseline if found in end or not
+        e.onPage="No";
+        e.original=true;
+        String name=e.first+" "+e.last;
         Scanner input = new Scanner(System.in);
-        System.out.println("Searching for :: "+name+" : "+title);
+        System.out.println("Searching for :: "+name+" : "+e.title);
         //find first name first
         for (i=0;i<arraySize;i++){
             //System.out.println("i: "+i+"::"+a[i]);
-            if (a[i].contains(first)){//found first name
-                if (a[i].contains(last)){//contains full name
+            if (a[i].contains(e.first)){//found first name
+                if (a[i].contains(e.last)){//contains full name
                     System.out.println("found full name: "+a[i]+ " at index "+i);
-                    ind=i;
+                    startInd=i;
                 }
                 else{//last name not found at index, check next index
-                    if(a[i+1].contains(last)){//last name is in the next index
+                    if(a[i+1].contains(e.last)){//last name is in the next index
                         System.out.println("found full name: "+a[i]+ " and "+a[i+1]+ "  at indexs "+i+ " & "+(i+1));
-                        ind=i+1;
+                        startInd=i+1;
                     }
                     else{
                         //must add catch for not the name we are looking for (Ann != Annual)
-                        
-                        System.out.println("Found first name:"+first+"in \""+a[i]+"\n"
-                                + "Do any of the following replace last name(\""+last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+
+                        System.out.println("Found first name:"+e.first+"in \""+a[i]+"\n"
+                                + "Do any of the following replace last name(\""+e.last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+
                                 "\n     type 0 if incorrect find");
                         String temp=input.next();
                         if (temp.equals("0")){
                             //continue thru file, false positive was detected
                         }
                         else{
-                            last=temp;
-                            if (a[i].contains(last)){return i;}
-                            if (a[i+1].contains(last)){return i+1;}   
-                            if (a[i-1].contains(last)){return i;}
+                            e.last=temp;
+                            if (a[i].contains(e.last)){startInd= i;}
+                            if (a[i+1].contains(e.last)){startInd= i+1;}   
+                            if (a[i-1].contains(e.last)){startInd= i;}
                         }
                     }
                 }
                 //FOUND NAME LOOK FOR TITLE
                 //FIRST CHECK FOLLOWING INDEX
                 //begin by checking for entire string at next index
-                if (a[i].contains(title)){
-                    return 0;
+                if (a[startInd].contains(e.title)){
+                    e.IndexNameToTitle=0;
                 }
-                if (a[ind+1].contains(title)){
-                    return 1;
+                if (a[startInd+1].contains(e.title)){
+                    e.IndexNameToTitle=1;
                 }    
                 else{//check next index
-                    if (a[ind+2].contains(title)){  return 2;}
-                    if (a[ind-1].contains(title)){  return-1;}
+                    if (a[i+2].contains(e.title)){e.IndexNameToTitle=2;}
+                    if (a[i-1].contains(e.title)){e.IndexNameToTitle=-1;}
                     else{
                         System.out.println("Name Found::Title Not Found");
-                        return -99; //way to return found name but no title index
+                        return e;
                     }
                 }      
-            }
+            }//end found first name
             else{
-                if (a[i].contains(last)){
+                if (a[i].contains(e.last)){
                     int loop =1;
                     while (loop==1){
                         if(i!=0){
-                        System.out.println("Found last name, but not first. Do any names in the following replace "+first+" (y/n)\n "+a[i]+" "+a[i-1]+" ");
+                            System.out.println("Found last name, but not first. Do any names in the following replace "+e.first+" (y/n)\n "+a[i]+" "+a[i-1]+" ");
                         }
                         else{
-                        System.out.println("Found last name, but not first. Do any names in the following replace "+first+" (y/n)\n "+a[i]+"  ");
-                            
+                            System.out.println("Found last name, but not first. Do any names in the following replace "+e.first+" (y/n)\n "+a[i]+"  ");
                         }
-                        
                         String yorn=input.next();
                         if (yorn.equalsIgnoreCase("n")){
-                            return 99;//exit not found
+                            return e;
                         }
                         else{
                             if (yorn.equalsIgnoreCase("y")){
                                 System.out.println("Please enter the name you believe replaces the first name:");
-                                first=input.next();
+                                e.first=input.next();
                                 loop=0;
                             }
                             else{
@@ -394,7 +400,7 @@ public class Scraper {
             }
         }
 //end arrray search for name;
-        return ind;
+        return e;
     }
 
     

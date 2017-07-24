@@ -10,7 +10,7 @@ class employee {
     String last;
     String title;
     String updatedTitle;
-    
+    int IndexNameToTitle=-99;
     public void printEmployee(){
         System.out.println("-----"+this.first+" "+this.last+"  Title: "+this.title);
     }
