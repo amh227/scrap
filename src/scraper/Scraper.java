@@ -225,6 +225,7 @@ public class Scraper {
         int count = 0, found = 0;
         //-------------------------------------------------------iterating companies--------------------------------------------------
         for (i = 0; i < compCount; i++) {
+            System.out.println("At Company: "+companies[i].name);
             found=0;
             System.out.println(i + ". :");
             companies[i].printCompany();
@@ -327,7 +328,9 @@ public class Scraper {
                         ind=i+1;
                     }
                     else{
-                        System.out.println("Do any of the following replace last name(\""+last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+"0 to exit");
+                        //must add catch for not the name we are looking for (Ann != Annual)
+                        
+                        System.out.println("Found first name:"+first+"\nDo any of the following replace last name(\""+last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+"0 to exit");
                         String temp=input.next();
                         if (temp.equals("0")){
                             System.out.println("First name found, but last name not, please check URL");
