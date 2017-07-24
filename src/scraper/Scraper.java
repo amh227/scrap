@@ -330,14 +330,18 @@ public class Scraper {
                     else{
                         //must add catch for not the name we are looking for (Ann != Annual)
                         
-                        System.out.println("Found first name:"+first+"\nDo any of the following replace last name(\""+last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+"0 to exit");
+                        System.out.println("Found first name:"+first+"in \""+a[i]+"\n"
+                                + "Do any of the following replace last name(\""+last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+
+                                "\n     type 0 if incorrect find");
                         String temp=input.next();
                         if (temp.equals("0")){
-                            System.out.println("First name found, but last name not, please check URL");
-                            return 0;
+                            //continue thru file, false positive was detected
                         }
                         else{
                             last=temp;
+                            if (a[i].contains(last)){return i;}
+                            if (a[i+1].contains(last)){return i+1;}   
+                            if (a[i-1].contains(last)){return i;}
                         }
                     }
                 }
