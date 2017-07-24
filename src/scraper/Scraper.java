@@ -221,10 +221,9 @@ public class Scraper {
                 System.out.print("   " + headers[i][j]);
             }
         }
-
-        //Interate through companies and print titles== testing
         String url = "  ", userInput, companyName = "  ",language;
         int count = 0, found = 0;
+        //-------------------------------------------------------iterating companies--------------------------------------------------
         for (i = 0; i < compCount; i++) {
             found=0;
             System.out.println(i + ". :");
@@ -254,6 +253,7 @@ public class Scraper {
                     String text = doc.body().text();
                     System.out.println("\n" + text + "\n");
                     count = 0; //count for employeesin individual company::used to return if no employees found
+    //---------------------------------------------------------------------------------------<EMPLOYEE ITEREATION>------------    
                     for (j = 0; j < companies[i].numEmployees; j++) {
                         //get name of employee
                         String first = companies[i].list[j].first;
@@ -275,6 +275,7 @@ public class Scraper {
                             else {url = userInput;}
                         }
                     }
+    //----------------------------------------------------------------------------<END EMPLOYEE ITERATIONS>-----------------                
                 } 
                 catch (org.jsoup.UnsupportedMimeTypeException| javax.net.ssl.SSLHandshakeException |org.jsoup.HttpStatusException UMTE) {
                     System.out.println("\n::ERROR::URL: " + url + "\nInvalid for current programming :: May be pdf formatting\n");
@@ -291,20 +292,14 @@ public class Scraper {
                         }
                         else {url = userInput;}
                     }
-                    
                 }
-                
             }//end found loop
             //end loop for finding all employees :: check for adds
             System.out.println("Company: "+companies[i].name);
             
-            
-            
-            
-            
-        }//ends company count
-        //begin looking for adds from index to title
-        
+        }
+//------------------------------------------------------------ends company iteration--------------------------------------
+       
         
         
         
@@ -312,9 +307,7 @@ public class Scraper {
         System.out.println("FOUND EMPLOYEES: "+foundEmployees+"   with Title: "+foundTitle);
         System.out.println("PAGE ERRORS: "+pageErrors);
     }
-
-    //Reads in entire excel file and organize it by companies with all employees listed
-    
+//------------------------------------------------------------------------------------------------- <END MAIN> -----------
     
     public static int findIndexNameToTitle(String[] a, int arraySize, String first, String last, String name, String title){
         int i, ind=99;
@@ -334,8 +327,15 @@ public class Scraper {
                         ind=i+1;
                     }
                     else{
-                        System.out.println("First name found, but last name not, please check URL");
-                        return 0;
+                        System.out.println("Do any of the following replace last name(\""+last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+"0 to exit");
+                        String temp=input.next();
+                        if (temp.equals("0")){
+                            System.out.println("First name found, but last name not, please check URL");
+                            return 0;
+                        }
+                        else{
+                            last=temp;
+                        }
                     }
                 }
                 //FOUND NAME LOOK FOR TITLE
@@ -386,9 +386,6 @@ public class Scraper {
                 }
             }
         }
-        
-
-
 //end arrray search for name;
         return ind;
     }
