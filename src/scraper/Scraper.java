@@ -318,126 +318,121 @@ public class Scraper {
      * @return returns the index between the name and the title of the employee being looked for
      */
     public static employee findEmployee(String[] a, int arraySize, employee e){
-        int i, startInd=0 ,ind=99, inTryCatch=0;
+        int i, startInd=0 ,ind=99, inTryCatch=0, foundName=0;
         e.IndexNameToTitle=-99;//   set to -99 to use as baseline if found in end or not
         e.onPage="No";
         e.original=true;
         String name=e.first+" "+e.last;
         Scanner input = new Scanner(System.in);
-        System.out.println("Searching for :: "+name+" : "+e.title);
+        System.out.println("\nSearching for :: "+name+" : "+e.title);
         //find first name first
         for (i=0;i<arraySize;i++){
             //System.out.println("i: "+i+"::"+a[i]);
             if (a[i].contains(e.first)){//found first name
                 if (a[i].contains(e.last)){//contains full name
                     System.out.println("found full name: "+a[i]+ " at index "+i);
+                    e.onPage="Yes";
+                    foundName=1;
                     startInd=i;
+                    i=arraySize;
                 }
                 else{//last name not found at index, check next index
                     if(a[i+1].contains(e.last)){//last name is in the next index
                         System.out.println("found full name: "+a[i]+ " and "+a[i+1]+ "  at indexs "+i+ " & "+(i+1));
                         startInd=i+1;
+                        e.onPage="Yes";
+                        foundName=1;
+                        i=arraySize;
                     }
                     else{
                         //must add catch for not the name we are looking for (Ann != Annual)
-                        inTryCatch=1;
                         String temp=" ";
-                        while (inTryCatch==1){
-                            System.out.println("Found first name:"+e.first+"in \""+a[i]+"\n"
-                                    + "Do any of the following replace last name(\""+e.last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+
-                                    "\n     type 0 if incorrect find");
-                           try{
-                                temp=input.next();
-                                inTryCatch=0;  
-                            }    
-                            catch(java.util.InputMismatchException ime){
-                                inTryCatch=1;
-                                System.out.println("Incorrect input, please try again");
-                            }
-                                    if (temp.equals("0")){
-                                break;
-                                //continue thru file, false positive was detected
-                            }
-                            else{
-                                e.last=temp;
-                                if (a[i].contains(e.last)){startInd= i;}
-                                if (a[i+1].contains(e.last)){startInd= i+1;}   
-                                if (a[i-1].contains(e.last)){startInd= i;}
-                                
-                            }
+                        System.out.println("Found first name:"+e.first+" at ["+i+"]: \""+a[i]+"\n"
+                                + "Do any of the following replace last name(\""+e.last+"\"): "+a[i]+" ; "+a[i-1]+" ; "+a[i+1]+
+                                "\ntype 0 if incorrect find");
+                        temp=input.next();
+                        if (temp.equals("0")){
+                            foundName=0;
+                            //continue thru file, false positive was detected
+                        }
+                        else{
+                            foundName=1;
+                            e.onPage="Yes";
+                            e.last=temp;
+                            if (a[i].contains(e.last)){startInd= i;}
+                            if (a[i+1].contains(e.last)){startInd= i+1;}   
+                            if (a[i-1].contains(e.last)){startInd= i;}
+                            i=arraySize;
                         }
                     }
                 }
-                //FOUND NAME LOOK FOR TITLE
-                //FIRST CHECK FOLLOWING INDEX
-                //begin by checking for entire string at next index
-                if (a[startInd].contains(e.title)){
-                    e.IndexNameToTitle=0;
-                }
-                if (a[startInd+1].contains(e.title)){
-                    e.IndexNameToTitle=1;
-                }    
-                else{//check next index
-                    if (a[i+2].contains(e.title)){e.IndexNameToTitle=2;}
-                    if (a[i-1].contains(e.title)){e.IndexNameToTitle=-1;}
+            }//end found first name    
+        }//end for loop iteration looking for first name :: look for last        
+        if (foundName==0){//did not find first name :: look for last
+            for (i=0;i<arraySize;i++){
+            //System.out.println("i: "+i+"::"+a[i]);
+                if (a[i].contains(e.last)){//found first name
+                    //must add catch for not the name we are looking for (Ann != Annual)
+                    String temp=" ";
+                    System.out.println("Found last name:"+e.last+" at ["+i+"]: \""+a[i]+"\n"
+                            + "Do any of the following replace first name(\""+e.first+"\"): "+a[i]+" ; "+a[i-1]+" ; "+a[i+1]+
+                            "\ntype 0 if incorrect find");
+                    temp=input.next();
+                    if (temp.equals("0")){
+                        foundName=0;
+                        //continue thru file, false positive was detected
+                    }
                     else{
-                        System.out.println("Name Found :: Title Not Found  :: Name found here: "+a[startInd]);
-                        //print indices around name to give option for title
-                        System.out.println("Do any of the following indices have the title (Enter index or 0 to enter your own)");
-                        System.out.println((startInd+1)+" : "+a[startInd+1]);
-                        System.out.println((startInd+2)+" : "+a[startInd+2]); 
-                        System.out.println((startInd+3)+" : "+a[startInd+3]); 
-                        inTryCatch=1;
-                        int tempIndex=-99;
-                        while (inTryCatch==1){
-                            try{
-                                tempIndex =input.nextInt();
-                                inTryCatch=0;  
-                            }    
-                            catch(java.util.InputMismatchException ime){
-                                inTryCatch=1;
-                                System.out.println("Incorrect input, please try again");
-                            }
+                        foundName=1;
+                        e.onPage="Yes";
+                        e.last=temp;
+                        if (a[i].contains(e.last)){startInd= i;}
+                        if (a[i+1].contains(e.last)){startInd= i+1;}   
+                        if (a[i-1].contains(e.last)){startInd= i;}
+                        i=arraySize;
+                    }
+                }//end found last name    
+            }//end for loop iteration looking for first name :: look for last        
+        
+            
+        }        
+                
+        if (foundName==1){
+                //FOUND NAME LOOK FOR TITLE
+            if (a[startInd].contains(e.title)){     e.IndexNameToTitle=0;   }
+            if (a[startInd+1].contains(e.title)){   e.IndexNameToTitle=1;   }    
+            else{//check next index
+                if (a[i+2].contains(e.title)){e.IndexNameToTitle=2;}
+                if (a[i-1].contains(e.title)){e.IndexNameToTitle=-1;}
+                else{
+                    System.out.println("Name Found :: Title Not Found  :: Name found here: "+a[startInd]);
+                    //print indices around name to give option for title
+                    System.out.println("Do any of the following indices have the title (Enter index or 0 to enter your own)");
+                    System.out.println((startInd+1)+" : "+a[startInd+1]);
+                    System.out.println((startInd+2)+" : "+a[startInd+2]); 
+                    System.out.println((startInd+3)+" : "+a[startInd+3]); 
+                    inTryCatch=1;
+                    int tempIndex=-99;
+                    while (inTryCatch==1){
+                        try{
+                            tempIndex =input.nextInt();
+                            inTryCatch=0;  
+                        }    
+                        catch(java.util.InputMismatchException ime){
+                            inTryCatch=1;
+                            System.out.println("Incorrect input, please try again");
                         }
-                       
-                        if (tempIndex!=0){  e.title=a[tempIndex]; }
-                        else{
-                            System.out.println("Please enter title: ");
-                            e.title=input.next();}
-                        return e;
+                    }
+
+                    if (tempIndex!=0){  e.title=a[tempIndex]; }
+                    else{
+                        System.out.println("Please enter title: ");
+                        e.title=input.next();}
+                    return e;
                     }
                 }      
-            }//end found first name
-            else{
-                if (a[i].contains(e.last)){
-                    int loop =1;
-                    while (loop==1){
-                        if(i!=0){
-                            System.out.println("Found last name, but not first. Do any names in the following replace "+e.first+" (y/n)\n "+a[i]+" "+a[i-1]+" ");
-                        }
-                        else{
-                            System.out.println("Found last name, but not first. Do any names in the following replace "+e.first+" (y/n)\n "+a[i]+"  ");
-                        }
-                        String yorn=input.next();
-                        if (yorn.equalsIgnoreCase("n")){
-                            return e;
-                        }
-                        else{
-                            if (yorn.equalsIgnoreCase("y")){
-                                System.out.println("Please enter the name you believe replaces the first name:");
-                                e.first=input.next();
-                                loop=0;
-                            }
-                            else{
-                                System.out.println("Expected y or n input");
-                            }
-                        }
-                    }
-                }
             }
-        }
-//end arrray search for name;
-        return e;
+    return e;
     }
 
     
