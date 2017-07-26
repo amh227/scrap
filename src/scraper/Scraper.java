@@ -231,50 +231,50 @@ public class Scraper {
             System.out.println(i + ". :");
             companies[i].printCompany();
             url = companies[i].URL;
-            while (found==0){
-                try {
-                    Document doc = Jsoup.connect(url).get();
-                    Jsoup.connect(url).header("Accept-Language", "en");
-                    //get language page is in
-                    Element taglang = doc.select("html").first();
-                    language = (taglang.attr("lang"));
-                    
+            
+            try {
+                Document doc = Jsoup.connect(url).get();
+                Jsoup.connect(url).header("Accept-Language", "en");
+                //get language page is in
+                Element taglang = doc.select("html").first();
+                language = (taglang.attr("lang"));
 
-                    //trying to iterate through all strings of document individually    
-                    Elements elements = doc.body().select("*");
-                    String[] strArr = new String[10000];
-                    int iterator = 0;
-                    for (Element element : elements) {
-                        String s = element.ownText();
-                        if (s.trim().length() > 0) {
-                            strArr[iterator] = element.ownText();
-                            if (firstRun==0){System.out.println(" "+s);}
-                            iterator++;
-                        }
+
+                //trying to iterate through all strings of document individually    
+                Elements elements = doc.body().select("*");
+                String[] strArr = new String[10000];
+                int iterator = 0;
+                for (Element element : elements) {
+                    String s = element.ownText();
+                    if (s.trim().length() > 0) {
+                        strArr[iterator] = element.ownText();
+                        if (firstRun==0){System.out.println(" "+s);}
+                        iterator++;
                     }
-                    firstRun=1;
-                    String text = doc.body().text();
-                    System.out.println("\n" + text + "\n");
-                    count = 0; //count for employeesin individual company::used to return if no employees found
-    //---------------------------------------------------------------------------------------<EMPLOYEE ITEREATION>------------    
-                    for (j = 0; j < companies[i].numEmployees; j++) {
-                        companies[i].list[j]=findIndexNameToTitle(strArr, iterator, companies[i].list[j] );
-                        /**
-                        if (indexNameToTitle!=99){//99=name not found
-                            if(indexNameToTitle!=-99){//-99 name found/ title not found
-                                foundTitle++;
-                            }
-                            foundEmployees++;
-                            count++;
+                }
+                firstRun=1;
+                String text = doc.body().text();
+                System.out.println("\n" + text + "\n");
+                count = 0; //count for employeesin individual company::used to return if no employees found
+//---------------------------------------------------------------------------------------<EMPLOYEE ITEREATION>------------    
+                for (j = 0; j < companies[i].numEmployees; j++) {
+                    companies[i].list[j]=findEmployee(strArr, iterator, companies[i].list[j] );
+                    /**
+                    if (indexNameToTitle!=99){//99=name not found
+                        if(indexNameToTitle!=-99){//-99 name found/ title not found
+                            foundTitle++;
                         }
-                        if (j == companies[i].numEmployees - 1 && count == 0) {
-                            System.out.println("\nNO EMPLOYEES FOUND - TRY DIFFERENT URL (or type 0 to quit)\n");
-                            userInput = input.next();
-                            if (userInput.compareTo("0") == 0) { found = 1;} 
-                            else {url = userInput;}
-                        }
-                        * */
+                        foundEmployees++;
+                        count++;
                     }
+                    if (j == companies[i].numEmployees - 1 && count == 0) {
+                        System.out.println("\nNO EMPLOYEES FOUND - TRY DIFFERENT URL (or type 0 to quit)\n");
+                        userInput = input.next();
+                        if (userInput.compareTo("0") == 0) { found = 1;} 
+                        else {url = userInput;}
+                    }
+                    * */
+                }
     //----------------------------------------------------------------------------<END EMPLOYEE ITERATIONS>-----------------                
                 } 
                 catch (org.jsoup.UnsupportedMimeTypeException| javax.net.ssl.SSLHandshakeException |org.jsoup.HttpStatusException UMTE) {
@@ -293,7 +293,7 @@ public class Scraper {
                         else {url = userInput;}
                     }
                 }
-            }//end found loop
+            
             //end loop for finding all employees :: check for adds
             System.out.println("Company: "+companies[i].name);
             
@@ -317,8 +317,8 @@ public class Scraper {
      * @param e : employee being looked for
      * @return returns the index between the name and the title of the employee being looked for
      */
-    public static employee findIndexNameToTitle(String[] a, int arraySize, employee e){
-        int i, startInd=0 ,ind=99;
+    public static employee findEmployee(String[] a, int arraySize, employee e){
+        int i, startInd=0 ,ind=99, inTryCatch=0;
         e.IndexNameToTitle=-99;//   set to -99 to use as baseline if found in end or not
         e.onPage="No";
         e.original=true;
@@ -340,18 +340,31 @@ public class Scraper {
                     }
                     else{
                         //must add catch for not the name we are looking for (Ann != Annual)
-                        System.out.println("Found first name:"+e.first+"in \""+a[i]+"\n"
-                                + "Do any of the following replace last name(\""+e.last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+
-                                "\n     type 0 if incorrect find");
-                        String temp=input.next();
-                        if (temp.equals("0")){
-                            //continue thru file, false positive was detected
-                        }
-                        else{
-                            e.last=temp;
-                            if (a[i].contains(e.last)){startInd= i;}
-                            if (a[i+1].contains(e.last)){startInd= i+1;}   
-                            if (a[i-1].contains(e.last)){startInd= i;}
+                        inTryCatch=1;
+                        String temp=" ";
+                        while (inTryCatch==1){
+                            System.out.println("Found first name:"+e.first+"in \""+a[i]+"\n"
+                                    + "Do any of the following replace last name(\""+e.last+"\"): "+a[i]+" "+a[i-1]+" "+a[i+1]+
+                                    "\n     type 0 if incorrect find");
+                           try{
+                                temp=input.next();
+                                inTryCatch=0;  
+                            }    
+                            catch(java.util.InputMismatchException ime){
+                                inTryCatch=1;
+                                System.out.println("Incorrect input, please try again");
+                            }
+                                    if (temp.equals("0")){
+                                break;
+                                //continue thru file, false positive was detected
+                            }
+                            else{
+                                e.last=temp;
+                                if (a[i].contains(e.last)){startInd= i;}
+                                if (a[i+1].contains(e.last)){startInd= i+1;}   
+                                if (a[i-1].contains(e.last)){startInd= i;}
+                                
+                            }
                         }
                     }
                 }
@@ -368,13 +381,25 @@ public class Scraper {
                     if (a[i+2].contains(e.title)){e.IndexNameToTitle=2;}
                     if (a[i-1].contains(e.title)){e.IndexNameToTitle=-1;}
                     else{
-                        System.out.println("Name Found::Title Not Found");
+                        System.out.println("Name Found :: Title Not Found  :: Name found here: "+a[startInd]);
                         //print indices around name to give option for title
                         System.out.println("Do any of the following indices have the title (Enter index or 0 to enter your own)");
                         System.out.println((startInd+1)+" : "+a[startInd+1]);
                         System.out.println((startInd+2)+" : "+a[startInd+2]); 
                         System.out.println((startInd+3)+" : "+a[startInd+3]); 
-                        int tempIndex=input.nextInt();
+                        inTryCatch=1;
+                        int tempIndex=-99;
+                        while (inTryCatch==1){
+                            try{
+                                tempIndex =input.nextInt();
+                                inTryCatch=0;  
+                            }    
+                            catch(java.util.InputMismatchException ime){
+                                inTryCatch=1;
+                                System.out.println("Incorrect input, please try again");
+                            }
+                        }
+                       
                         if (tempIndex!=0){  e.title=a[tempIndex]; }
                         else{
                             System.out.println("Please enter title: ");
