@@ -244,40 +244,27 @@ public class Scraper {
                 Elements elements = doc.body().select("*");
                 String[] strArr = new String[10000];
                 int iterator = 0;
+                
                 for (Element element : elements) {
                     String s = element.ownText();
                     if (s.trim().length() > 0) {
                         strArr[iterator] = element.ownText();
-                        if (firstRun==0){System.out.println(" "+s);}
+                        if (firstRun==0){System.out.println("["+iterator+"]" +s);}
                         iterator++;
                     }
                 }
                 firstRun=1;
                 String text = doc.body().text();
-                System.out.println("\n" + text + "\n");
+                //System.out.println("\n" + text + "\n");
                 count = 0; //count for employeesin individual company::used to return if no employees found
 //---------------------------------------------------------------------------------------<EMPLOYEE ITEREATION>------------    
                 for (j = 0; j < companies[i].numEmployees; j++) {
                     companies[i].list[j]=findEmployee(strArr, iterator, companies[i].list[j] );
-                    /**
-                    if (indexNameToTitle!=99){//99=name not found
-                        if(indexNameToTitle!=-99){//-99 name found/ title not found
-                            foundTitle++;
-                        }
-                        foundEmployees++;
-                        count++;
-                    }
-                    if (j == companies[i].numEmployees - 1 && count == 0) {
-                        System.out.println("\nNO EMPLOYEES FOUND - TRY DIFFERENT URL (or type 0 to quit)\n");
-                        userInput = input.next();
-                        if (userInput.compareTo("0") == 0) { found = 1;} 
-                        else {url = userInput;}
-                    }
-                    * */
+                    
                 }
     //----------------------------------------------------------------------------<END EMPLOYEE ITERATIONS>-----------------                
                 } 
-                catch (org.jsoup.UnsupportedMimeTypeException| javax.net.ssl.SSLHandshakeException |org.jsoup.HttpStatusException UMTE) {
+                catch (org.jsoup.UnsupportedMimeTypeException| javax.net.ssl.SSLHandshakeException |java.net.SocketTimeoutException|org.jsoup.HttpStatusException UMTE) {
                     System.out.println("\n::ERROR::URL: " + url + "\nInvalid for current programming :: May be pdf formatting\n");
                     System.out.println("\nTRY DIFFERENT URL (0 to quit, 1 for manual prompt/entry )\n");
                     userInput = input.next();
@@ -295,7 +282,9 @@ public class Scraper {
                 }
             
             //end loop for finding all employees :: check for adds
-            System.out.println("Company: "+companies[i].name);
+            companies[i].printCompany();
+            System.out.println("Would you like to edit?");
+            userInput=input.next();
             
         }
 //------------------------------------------------------------ends company iteration--------------------------------------
@@ -328,9 +317,9 @@ public class Scraper {
         //find first name first
         for (i=0;i<arraySize;i++){
             //System.out.println("i: "+i+"::"+a[i]);
-            if (a[i].contains(e.first)){//found first name
+            if (a[i].contains(e.first+" ")){//found first name
                 if (a[i].contains(e.last)){//contains full name
-                    System.out.println("found full name: "+a[i]+ " at index "+i);
+                    //System.out.println("found full name: "+a[i]+ " at index "+i);
                     e.onPage="Yes";
                     foundName=1;
                     startInd=i;
@@ -338,7 +327,7 @@ public class Scraper {
                 }
                 else{//last name not found at index, check next index
                     if(a[i+1].contains(e.last)){//last name is in the next index
-                        System.out.println("found full name: "+a[i]+ " and "+a[i+1]+ "  at indexs "+i+ " & "+(i+1));
+                        //System.out.println("found full name: "+a[i]+ " and "+a[i+1]+ "  at indexs "+i+ " & "+(i+1));
                         startInd=i+1;
                         e.onPage="Yes";
                         foundName=1;
@@ -371,25 +360,30 @@ public class Scraper {
         if (foundName==0){//did not find first name :: look for last
             for (i=0;i<arraySize;i++){
             //System.out.println("i: "+i+"::"+a[i]);
-                if (a[i].contains(e.last)){//found first name
+                if (a[i].contains(" "+e.last)){//found first name
                     //must add catch for not the name we are looking for (Ann != Annual)
                     String temp=" ";
-                    System.out.println("Found last name:"+e.last+" at ["+i+"]: \""+a[i]+"\n"
-                            + "Do any of the following replace first name(\""+e.first+"\"): "+a[i]+" ; "+a[i-1]+" ; "+a[i+1]+
-                            "\ntype 0 if incorrect find");
-                    temp=input.next();
-                    if (temp.equals("0")){
-                        foundName=0;
-                        //continue thru file, false positive was detected
+                    try{
+                        System.out.println("Found last name:"+e.last+" at ["+i+"]: \""+a[i]+"\n"
+                                + "Do any of the following replace first name(\""+e.first+"\"): "+a[i]+" ; "+a[i-1]+" ; "+a[i+1]+
+                                "\ntype 0 if incorrect find");
+                        temp=input.next();
+                        if (temp.equals("0")){
+                            foundName=0;
+                            //continue thru file, false positive was detected
+                        }
+                        else{
+                            foundName=1;
+                            e.onPage="Yes";
+                            e.last=temp;
+                            if (a[i].contains(e.last)){startInd= i;}
+                            if (a[i+1].contains(e.last)){startInd= i+1;}   
+                            if (a[i-1].contains(e.last)){startInd= i;}
+                            i=arraySize;
+                        }
                     }
-                    else{
-                        foundName=1;
-                        e.onPage="Yes";
-                        e.last=temp;
-                        if (a[i].contains(e.last)){startInd= i;}
-                        if (a[i+1].contains(e.last)){startInd= i+1;}   
-                        if (a[i-1].contains(e.last)){startInd= i;}
-                        i=arraySize;
+                    catch (java.lang.ArrayIndexOutOfBoundsException aioobe){
+                        
                     }
                 }//end found last name    
             }//end for loop iteration looking for first name :: look for last        
@@ -402,25 +396,26 @@ public class Scraper {
             if (a[startInd].contains(e.title)){     e.IndexNameToTitle=0;   }
             if (a[startInd+1].contains(e.title)){   e.IndexNameToTitle=1;   }    
             else{//check next index
-                if (a[i+2].contains(e.title)){e.IndexNameToTitle=2;}
-                if (a[i-1].contains(e.title)){e.IndexNameToTitle=-1;}
+                if (a[startInd+2].contains(e.title)){e.IndexNameToTitle=2;}
+                if (a[startInd-1].contains(e.title)){e.IndexNameToTitle=-1;}
                 else{
-                    System.out.println("Name Found :: Title Not Found  :: Name found here: "+a[startInd]);
-                    //print indices around name to give option for title
-                    System.out.println("Do any of the following indices have the title (Enter index or 0 to enter your own)");
-                    System.out.println((startInd+1)+" : "+a[startInd+1]);
-                    System.out.println((startInd+2)+" : "+a[startInd+2]); 
-                    System.out.println((startInd+3)+" : "+a[startInd+3]); 
                     inTryCatch=1;
                     int tempIndex=-99;
                     while (inTryCatch==1){
                         try{
+                            System.out.println("Name Found :: Title Not Found  :: Name found here: "+a[startInd]);
+                            //print indices around name to give option for title
+                            System.out.println("Do any of the following indices have the title (Enter index or 0 to enter your own)");
+                            System.out.println((startInd+1)+" : "+a[startInd+1]);
+                            System.out.println((startInd+2)+" : "+a[startInd+2]); 
+                            System.out.println((startInd+3)+" : "+a[startInd+3]); 
                             tempIndex =input.nextInt();
                             inTryCatch=0;  
                         }    
                         catch(java.util.InputMismatchException ime){
                             inTryCatch=1;
                             System.out.println("Incorrect input, please try again");
+                            input.next();
                         }
                     }
 

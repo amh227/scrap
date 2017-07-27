@@ -2,16 +2,18 @@ package scraper;
 
 
 class employee {
-    boolean original;
-    String onPage;
-    String updatedURL;
-    String contactID;
-    String first;
-    String last;
-    String title;
-    String updatedTitle;
+    boolean original=true;
+    String onPage="No";
+    String updatedURL=" ";
+    String contactID="000";
+    String first="first";
+    String last="last";
+    String title="title";
     int IndexNameToTitle=-99;
     public void printEmployee(){
-        System.out.println("-----"+this.first+" "+this.last+"  Title: "+this.title);
+        String found;
+        if (onPage.equalsIgnoreCase("Yes")) {found="--FOUND--";}
+        else                                {found="NOT Found";}
+        System.out.println(" "+found+"  "+this.first+" "+this.last+"  Title: "+this.title+" ");
     }
 }
