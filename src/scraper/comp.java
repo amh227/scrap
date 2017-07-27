@@ -29,6 +29,16 @@ public class comp {
            System.out.print(i+".");
            this.list[i].printEmployee();
        }
+    }
+    public void printCompanyShort(){
+        System.out.println("\nName: "+this.name+"     Account ID: "+this.accountID+"    \nlocation ID: "+this.locationID+"    URL: "+this.URL);
+       int i=0;
+       for (i=0;i<this.numEmployees;i++){
+           System.out.print(i+".");
+           this.list[i].printEmployeeShort();
+       
+        
+    }   
    }
    
     

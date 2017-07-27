@@ -225,11 +225,10 @@ public class Scraper {
         int count = 0, found = 0;
         //-------------------------------------------------------iterating companies--------------------------------------------------
         for (i = 0; i < compCount; i++) {
-            System.out.println("At Company: "+companies[i].name);
             int firstRun=0;
             found=0;
-            System.out.println(i + ". :");
-            companies[i].printCompany();
+            //System.out.println(i + ". :");
+            companies[i].printCompanyShort();
             url = companies[i].URL;
             
             try {
@@ -238,8 +237,6 @@ public class Scraper {
                 //get language page is in
                 Element taglang = doc.select("html").first();
                 language = (taglang.attr("lang"));
-
-
                 //trying to iterate through all strings of document individually    
                 Elements elements = doc.body().select("*");
                 String[] strArr = new String[10000];
@@ -248,7 +245,7 @@ public class Scraper {
                 for (Element element : elements) {
                     String s = element.ownText();
                     if (s.trim().length() > 0) {
-                        strArr[iterator] = element.ownText();
+                        if (element.ownText().length()>1){strArr[iterator] = element.ownText();}
                         if (firstRun==0){System.out.println("["+iterator+"]" +s);}
                         iterator++;
                     }
@@ -387,8 +384,6 @@ public class Scraper {
                     }
                 }//end found last name    
             }//end for loop iteration looking for first name :: look for last        
-        
-            
         }        
                 
         if (foundName==1){
@@ -403,12 +398,15 @@ public class Scraper {
                     int tempIndex=-99;
                     while (inTryCatch==1){
                         try{
-                            System.out.println("Name Found :: Title Not Found  :: Name found here: "+a[startInd]);
+                            System.out.println("Name Found :: Title Not Found  ");
                             //print indices around name to give option for title
-                            System.out.println("Do any of the following indices have the title (Enter index or 0 to enter your own)");
-                            System.out.println((startInd+1)+" : "+a[startInd+1]);
-                            System.out.println((startInd+2)+" : "+a[startInd+2]); 
-                            System.out.println((startInd+3)+" : "+a[startInd+3]); 
+                            System.out.println("Do any of the following indices have the title (Enter index, 0 to enter, -1 to keep)");
+                            System.out.println("\t\t"+(startInd-2)+" : "+a[startInd-2]);                            
+                            System.out.println("\t\t"+(startInd-1)+" : "+a[startInd-1]);
+                            System.out.println("Name->\t"+(startInd)+" : "+a[startInd]);
+                            System.out.println("\t\t"+(startInd+1)+" : "+a[startInd+1]);
+                            System.out.println("\t\t"+(startInd+2)+" : "+a[startInd+2]); 
+                            System.out.println("\t\t"+(startInd+3)+" : "+a[startInd+3]); 
                             tempIndex =input.nextInt();
                             inTryCatch=0;  
                         }    

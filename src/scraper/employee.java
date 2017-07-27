@@ -10,6 +10,11 @@ class employee {
     String last="last";
     String title="title";
     int IndexNameToTitle=-99;
+    public void printEmployeeShort(){
+        System.out.println("---"+this.first+" "+this.last+"  Title: "+this.title+" ");
+        }
+
+    
     public void printEmployee(){
         String found;
         if (onPage.equalsIgnoreCase("Yes")) {found="--FOUND--";}
