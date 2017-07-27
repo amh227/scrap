@@ -392,43 +392,42 @@ public class Scraper {
                 
         if (foundName==1){
                 //FOUND NAME LOOK FOR TITLE
-            if (a[startInd].contains(e.title)){     e.IndexNameToTitle=0;   }
-            if (a[startInd+1].contains(e.title)){   e.IndexNameToTitle=1;   }    
-            else{//check next index
-                if (a[startInd+2].contains(e.title)){e.IndexNameToTitle=2;}
-                if (a[startInd-1].contains(e.title)){e.IndexNameToTitle=-1;}
-                else{
-                    inTryCatch=1;
-                    int tempIndex=-99;
-                    while (inTryCatch==1){
-                        try{
-                            System.out.println("Name Found :: Title Not Found  ");
-                            //print indices around name to give option for title
-                            System.out.println("Do any of the following indices have the title (Enter index, 0 to enter, -1 to keep)");
-                            System.out.println("\t\t"+(startInd-2)+" : "+a[startInd-2]);                            
-                            System.out.println("\t\t"+(startInd-1)+" : "+a[startInd-1]);
-                            System.out.println("Name->\t"+(startInd)+" : "+a[startInd]);
-                            System.out.println("\t\t"+(startInd+1)+" : "+a[startInd+1]);
-                            System.out.println("\t\t"+(startInd+2)+" : "+a[startInd+2]); 
-                            System.out.println("\t\t"+(startInd+3)+" : "+a[startInd+3]); 
-                            tempIndex =input.nextInt();
-                            inTryCatch=0;  
-                        }    
-                        catch(java.util.InputMismatchException ime){
-                            inTryCatch=1;
-                            System.out.println("Incorrect input, please try again");
-                            input.next();
-                        }
+            if (                            a[startInd].contains(e.title)){     e.IndexNameToTitle=0;   }
+            if ( startInd+1<=a.length &&    a[startInd+1].contains(e.title)){   e.IndexNameToTitle=1;   }    
+            if ( startInd+2<=a.length &&    a[startInd+2].contains(e.title)){e.IndexNameToTitle=2;}
+            if ( startInd-1>=0        &&    a[startInd-1].contains(e.title)){e.IndexNameToTitle=-1;}
+            else{
+                inTryCatch=1;
+                int tempIndex=-99;
+                while (inTryCatch==1){
+                    try{
+                        System.out.println("Name Found :: Title Not Found  ");
+                        //print indices around name to give option for title
+                        System.out.println("Do any of the following indices have the title (Enter index, 0 to enter, -1 to keep)");
+if ( startInd-2>=0){         System.out.println("\t"+(startInd-2)+" : "+a[startInd-2]); }                           
+if ( startInd-1>=0){         System.out.println("\t"+(startInd-1)+" : "+a[startInd-1]); }
+                             System.out.println("Name->\t"+(startInd)+" : "+a[startInd]);
+if ( startInd+1<=a.length){  System.out.println("\t"+(startInd+1)+" : "+a[startInd+1]);}
+if ( startInd+2<=a.length){  System.out.println("\t"+(startInd+2)+" : "+a[startInd+2]); }
+if ( startInd+3<=a.length){  System.out.println("\t"+(startInd+3)+" : "+a[startInd+3]); }
+                        tempIndex =input.nextInt();
+                        inTryCatch=0;  
+                    }    
+                    catch(java.util.InputMismatchException ime){
+                        inTryCatch=1;
+                        System.out.println("Incorrect input, please try again");
+                        input.next();
                     }
+                }
 
-                    if (tempIndex>0){  e.title=a[tempIndex]; }
-                    else{
-                        System.out.println("Please enter title: ");
-                        e.title=input.next();}
-                    return e;
-                    }
-                }      
-            }
+                if (tempIndex>0){  e.title=a[tempIndex]; }
+                else{
+                    System.out.println("Please enter title: ");
+                    e.title=input.next();}
+                return e;
+                }
+            }      
+
     return e;
     }
 
