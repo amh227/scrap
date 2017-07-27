@@ -1,7 +1,7 @@
 package scraper;
 
 
-class employee {
+public class employee {
     boolean original=true;
     String onPage="No";
     String updatedURL=" ";

@@ -1,7 +1,11 @@
 package scraper;
 
 public class comp {
+    int numEmployeesOnPage=0;
+    int numEmployeesAdded=0;
     int numEmployees=0;
+    int indexNameToTitle=-99;
+    
     String parent;
     String parentURL;
     String accountID;

@@ -3,7 +3,6 @@ package scraper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
 import org.apache.poi.ss.usermodel.Cell;
@@ -25,10 +24,10 @@ public class Scraper {
     public static void main(String[] args) throws IOException {
         comp[] companies = new comp[120];
         //Start with 100 potential arrayists for all the possible company names
-        String file, outputfile, lastCompanyID = "-", tempFirst = null, tempLast = null, tempTitle = null, tempContactID, tempCompanyID;
+        String file, lastCompanyID = "-", tempFirst = null, tempLast = null, tempTitle = null, tempContactID, tempCompanyID;
         //String arrays for headers of all sheets
         String[][] headers = new String[26][3];
-        int i, j, compCount = 0, empCount = 0, rowCount, colCount,totalEmployees=0,foundEmployees=0,pageErrors=0,foundTitle=0;
+        int i, j, compCount = 0, rowCount, colCount,totalEmployees=0,foundEmployees=0,pageErrors=0,foundTitle=0;
         Scanner input = new Scanner(System.in);
 
         if (args.length == 0) {
@@ -245,9 +244,10 @@ public class Scraper {
                 for (Element element : elements) {
                     String s = element.ownText();
                     if (s.trim().length() > 0) {
-                        if (element.ownText().length()>1){strArr[iterator] = element.ownText();}
-                        if (firstRun==0){System.out.println("["+iterator+"]" +s);}
-                        iterator++;
+                        if (element.ownText().length()>1){strArr[iterator] = element.ownText();
+                            if (firstRun==0){System.out.println("["+iterator+"]" +s);}
+                            iterator++;
+                        }
                     }
                 }
                 firstRun=1;
@@ -257,7 +257,11 @@ public class Scraper {
 //---------------------------------------------------------------------------------------<EMPLOYEE ITEREATION>------------    
                 for (j = 0; j < companies[i].numEmployees; j++) {
                     companies[i].list[j]=findEmployee(strArr, iterator, companies[i].list[j] );
-                    
+                    totalEmployees++;
+                    if (companies[i].list[j].onPage.equalsIgnoreCase("yes")){
+                        companies[i].numEmployeesOnPage++;
+                        foundEmployees++;
+                    }
                 }
     //----------------------------------------------------------------------------<END EMPLOYEE ITERATIONS>-----------------                
                 } 
@@ -304,7 +308,7 @@ public class Scraper {
      * @return returns the index between the name and the title of the employee being looked for
      */
     public static employee findEmployee(String[] a, int arraySize, employee e){
-        int i, startInd=0 ,ind=99, inTryCatch=0, foundName=0;
+        int i, startInd=0 , inTryCatch=0, foundName=0;
         e.IndexNameToTitle=-99;//   set to -99 to use as baseline if found in end or not
         e.onPage="No";
         e.original=true;
@@ -359,7 +363,7 @@ public class Scraper {
             //System.out.println("i: "+i+"::"+a[i]);
                 if (a[i].contains(" "+e.last)){//found first name
                     //must add catch for not the name we are looking for (Ann != Annual)
-                    String temp=" ";
+                    String temp;
                     try{
                         System.out.println("Found last name:"+e.last+" at ["+i+"]: \""+a[i]+"\n"
                                 + "Do any of the following replace first name(\""+e.first+"\"): "+a[i]+" ; "+a[i-1]+" ; "+a[i+1]+
@@ -417,7 +421,7 @@ public class Scraper {
                         }
                     }
 
-                    if (tempIndex!=0){  e.title=a[tempIndex]; }
+                    if (tempIndex>0){  e.title=a[tempIndex]; }
                     else{
                         System.out.println("Please enter title: ");
                         e.title=input.next();}
