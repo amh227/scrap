@@ -282,9 +282,18 @@ public class Scraper {
                     }
                 }
             
-            //end loop for finding all employees :: check for adds
-            companies[i].printCompany();
-            System.out.println("Would you like to edit?");
+//-------------end loop for finding all employees :: check for adds---------------------------------------------------------
+            companies[i].printCompany();    //PRINT ALL COMPANY INFO
+            int edit=0;                     //USED TO STAY IN EDITTING LOOP
+            
+            System.out.println("Would you like to edit? (y/n)");
+            
+            
+            
+            
+            
+            
+            
             userInput=input.next();
             
         }
@@ -419,16 +428,15 @@ if ( startInd+3<=a.length){  System.out.println("\t"+(startInd+3)+" : "+a[startI
                         input.next();
                     }
                 }
-
                 if (tempIndex>0){  e.title=a[tempIndex]; }
-                else{
+                if (tempIndex==-1){ return e; }
+                if (tempIndex==0){
                     System.out.println("Please enter title: ");
                     e.title=input.next();}
-                return e;
+                    return e;
                 }
             }      
-
-    return e;
+     return e;
     }
 
     
