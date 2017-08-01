@@ -275,7 +275,7 @@ public class Scraper {
                     } 
                     else{
                         if(userInput.compareTo("1") == 0){
-                            companies[i]=manualEnter(companies[i]);
+                            companies[i]=manualEdit(companies[i]);
                             found=1;
                         }
                         else {url = userInput;}
@@ -284,9 +284,13 @@ public class Scraper {
             
 //-------------end loop for finding all employees :: check for adds---------------------------------------------------------
             companies[i].printCompany();    //PRINT ALL COMPANY INFO
-            int edit=0;                     //USED TO STAY IN EDITTING LOOP
-            
+            String edit="  ";                     //USED TO STAY IN EDITTING LOOP
             System.out.println("Would you like to edit? (y/n)");
+            edit=input.next();
+            if (edit.compareToIgnoreCase("y")==0){
+                companies[i]=manualEdit(companies[i]);
+            }
+            
             
             
             
@@ -400,13 +404,16 @@ public class Scraper {
         }        
                 
         if (foundName==1){
+            inTryCatch=1;
                 //FOUND NAME LOOK FOR TITLE
-            if (                            a[startInd].contains(e.title)){     e.IndexNameToTitle=0;   }
-            if ( startInd+1<=a.length &&    a[startInd+1].contains(e.title)){   e.IndexNameToTitle=1;   }    
-            if ( startInd+2<=a.length &&    a[startInd+2].contains(e.title)){e.IndexNameToTitle=2;}
-            if ( startInd-1>=0        &&    a[startInd-1].contains(e.title)){e.IndexNameToTitle=-1;}
+                //must exit if found title -- make inTryCatch=0
+            if (                            a[startInd].contains(e.title))  {   e.IndexNameToTitle=0;   inTryCatch=0; }
+            if ( startInd+1<=a.length &&    a[startInd+1].contains(e.title)){   e.IndexNameToTitle=1;   inTryCatch=0; }    
+            if ( startInd+2<=a.length &&    a[startInd+2].contains(e.title)){   e.IndexNameToTitle=2;   inTryCatch=0; }
+            if ( startInd-1>=0        &&    a[startInd-1].contains(e.title)){   e.IndexNameToTitle=-1;  inTryCatch=0; }
+            if (inTryCatch==0){System.out.println ("Found: "+e.first+" "+e.last+"  at index: "+e.IndexNameToTitle);}
             else{
-                inTryCatch=1;
+                
                 int tempIndex=-99;
                 while (inTryCatch==1){
                     try{
@@ -452,7 +459,12 @@ if ( startInd+3<=a.length){  System.out.println("\t"+(startInd+3)+" : "+a[startI
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   
     }
-    private static comp manualEnter(comp company) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   
+    private static comp manualEdit(comp c) {
+        //printout all relevant information
+        c.printCompany();
+        System.out.println("Which emplyee would you like to edit (or type \"add\")");
+        
+    return c;
     }
 }
