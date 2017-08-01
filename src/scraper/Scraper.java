@@ -232,23 +232,27 @@ public class Scraper {
             
             try {
                 Document doc = Jsoup.connect(url).get();
-                Jsoup.connect(url).header("Accept-Language", "en");
-                //get language page is in
+                
                 Element taglang = doc.select("html").first();
                 language = (taglang.attr("lang"));
+                
                 //trying to iterate through all strings of document individually    
                 Elements elements = doc.body().select("*");
                 String[] strArr = new String[10000];
                 int iterator = 0;
                 
+                int hrefCount=0;
                 for (Element element : elements) {
-                    String s = element.ownText();
-                    if (s.trim().length() > 0) {
-                        if (element.ownText().length()>1){strArr[iterator] = element.ownText();
-                            if (firstRun==0){System.out.println("["+iterator+"]" +s);}
-                            iterator++;
+                    
+                    
+                        String s = element.ownText();
+                        if (s.trim().length() > 0) {
+                            if (element.ownText().length()>1){strArr[iterator] = element.ownText();
+                                if (firstRun==0){System.out.println("["+iterator+"]" +s);}
+                                iterator++;
+                            }
                         }
-                    }
+                    
                 }
                 firstRun=1;
                 String text = doc.body().text();
@@ -265,7 +269,8 @@ public class Scraper {
                 }
     //----------------------------------------------------------------------------<END EMPLOYEE ITERATIONS>-----------------                
                 } 
-                catch (org.jsoup.UnsupportedMimeTypeException| javax.net.ssl.SSLHandshakeException |java.net.SocketTimeoutException|org.jsoup.HttpStatusException UMTE) {
+              
+                catch (javax.net.ssl.SSLException |org.jsoup.UnsupportedMimeTypeException|java.net.SocketTimeoutException|org.jsoup.HttpStatusException UMTE) {
                     System.out.println("\n::ERROR::URL: " + url + "\nInvalid for current programming :: May be pdf formatting\n");
                     System.out.println("\nTRY DIFFERENT URL (0 to quit, 1 for manual prompt/entry )\n");
                     userInput = input.next();
@@ -285,20 +290,13 @@ public class Scraper {
 //-------------end loop for finding all employees :: check for adds---------------------------------------------------------
             companies[i].printCompany();    //PRINT ALL COMPANY INFO
             String edit="  ";                     //USED TO STAY IN EDITTING LOOP
-            System.out.println("Would you like to edit? (y/n)");
+            //input.nextLine();//clear cache
+            System.out.println("Would you like to edit? use number:(y=1/n=0)");
             edit=input.next();
-            if (edit.compareToIgnoreCase("y")==0){
+            if (edit.compareToIgnoreCase("1")==0){
                 companies[i]=manualEdit(companies[i]);
             }
             
-            
-            
-            
-            
-            
-            
-            
-            userInput=input.next();
             
         }
 //------------------------------------------------------------ends company iteration--------------------------------------
@@ -350,8 +348,9 @@ public class Scraper {
                     else{
                         //must add catch for not the name we are looking for (Ann != Annual)
                         String temp=" ";
+                        input.next();
                         System.out.println("Found first name:"+e.first+" at ["+i+"]: \""+a[i]+"\n"
-                                + "Do any of the following replace last name(\""+e.last+"\"): "+a[i]+" ; "+a[i-1]+" ; "+a[i+1]+
+                                + "Do any of the following replace last name(\""+e.last+"\"): \n"+a[i]+"\n"+a[i-1]+"\n"+a[i+1]+
                                 "\ntype 0 if incorrect find");
                         temp=input.next();
                         if (temp.equals("0")){
@@ -379,7 +378,7 @@ public class Scraper {
                     String temp;
                     try{
                         System.out.println("Found last name:"+e.last+" at ["+i+"]: \""+a[i]+"\n"
-                                + "Do any of the following replace first name(\""+e.first+"\"): "+a[i]+" ; "+a[i-1]+" ; "+a[i+1]+
+                                + "Do any of the following replace first name(\""+e.first+"\"):\n"+a[i]+"\n"+a[i-1]+"\n"+a[i+1]+
                                 "\ntype 0 if incorrect find");
                         temp=input.next();
                         if (temp.equals("0")){
