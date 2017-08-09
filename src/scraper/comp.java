@@ -12,6 +12,7 @@ public class comp {
     String name;
     String locationID;
     String URL;
+    String updatedURL="  ";
     employee[] list= new employee[100];
     
     

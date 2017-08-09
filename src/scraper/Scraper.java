@@ -10,21 +10,18 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-//---jsoup imports
-//https://jsoup.org/apidocs/
+//---jsoup imports --- https://jsoup.org/apidocs/
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Scraper {
-
-    
     public static void main(String[] args) throws IOException {
+        boolean decrementI, loop=false;
         comp[] companies = new comp[120];
         //Start with 100 potential arrayists for all the possible company names
-        String file, lastCompanyID = "-", tempFirst = null, tempLast = null, tempTitle = null, tempContactID, tempCompanyID;
+        String file, lastCompanyID = "-", tempFirst, tempLast, tempTitle , tempContactID, tempCompanyID;
         //String arrays for headers of all sheets
         String[][] headers = new String[26][3];
         int i, j, compCount = 0, rowCount, colCount,totalEmployees=0,foundEmployees=0,pageErrors=0,foundTitle=0;
@@ -34,9 +31,8 @@ public class Scraper {
             System.out.println("must enter filename");
             file="Job80.xlsx";
            // file = "Job.xlsx";
-        } else {
-            file = args[1];
-        }
+        } 
+        else {file = args[1];}
 
         int sheetNum = 0;
 
@@ -80,15 +76,11 @@ public class Scraper {
                         //System.out.println(" "+temp);
                     }
                     if (rowStart == rowNum) {
-                        //System.out.println(" in grid "+temp);
                         headers[cn][sheetNum] = temp;
                     }
-                    //employees
                     if (rowNum > rowStart) {
-                        //System.out.println("Looking for companies at  ["+rowNum+"]["+cn+"]");
                         if (cn == 1) {//cn==2 contains companyID
-                            if (cell == null) { temp = null;} 
-                            else {tempCompanyID = cell.getStringCellValue();//System.out.println("-"+temp);
+                           if (cell!=null) {tempCompanyID = cell.getStringCellValue();//System.out.println("-"+temp);
                                 if (tempCompanyID.equals(lastCompanyID)) {    //Same company as last round
                                     totalEmployees++;
                                      //7=H=contactID
@@ -221,15 +213,16 @@ public class Scraper {
             }
         }
         String url = "  ", userInput, companyName = "  ",language;
-        int count = 0, found = 0;
+        int count = 0;
         //-------------------------------------------------------iterating companies--------------------------------------------------
         for (i = 0; i < compCount; i++) {
-            int firstRun=0;
-            found=0;
-            //System.out.println(i + ". :");
-            companies[i].printCompanyShort();
-            url = companies[i].URL;
-            
+            decrementI=false;
+            if (companies[i].updatedURL.equalsIgnoreCase("  ")){
+                companies[i].printCompanyShort();
+                url = companies[i].URL;}
+            else{
+                url=companies[i].updatedURL;
+            }
             try {
                 Document doc = Jsoup.connect(url).get();
                 
@@ -239,29 +232,26 @@ public class Scraper {
                 //trying to iterate through all strings of document individually    
                 Elements elements = doc.body().select("*");
                 String[] strArr = new String[10000];
-                int iterator = 0;
-                
-                int hrefCount=0;
+                int iterator = 0, hrefCount=0;
                 for (Element element : elements) {
-                    
-                    
-                        String s = element.ownText();
-                        if (s.trim().length() > 0) {
-                            if (element.ownText().length()>1){strArr[iterator] = element.ownText();
-                                if (firstRun==0){System.out.println("["+iterator+"]" +s);}
-                                iterator++;
-                            }
-                        }
-                    
+                    String s = element.ownText();
+                    s = s.replaceAll("\\p{Pd}", "-");
+                    while(s.length()>0 &&(s.charAt(0)==' '|s.charAt(0)=='-'|s.charAt(0)=='\t'|s.charAt(0)=='\n'|s.charAt(0)=='|')){   //trim all white space and -
+                       //System.out.println("STRING BEING CUT:  "+s);
+                        s=s.substring(1);
+                       // System.out.println("CUT STRING :        "+s);
+                    }
+                    if (s.length()>1){
+                        strArr[iterator] = s;
+                        System.out.println("["+iterator+"]" +s);
+                        iterator++;
+                    }
                 }
-                firstRun=1;
-                String text = doc.body().text();
-                //System.out.println("\n" + text + "\n");
+               
                 count = 0; //count for employeesin individual company::used to return if no employees found
 //---------------------------------------------------------------------------------------<EMPLOYEE ITEREATION>------------    
                 for (j = 0; j < companies[i].numEmployees; j++) {
                     companies[i].list[j]=findEmployee(strArr, iterator, companies[i].list[j] );
-                    totalEmployees++;
                     if (companies[i].list[j].onPage.equalsIgnoreCase("yes")){
                         companies[i].numEmployeesOnPage++;
                         foundEmployees++;
@@ -272,38 +262,61 @@ public class Scraper {
               
                 catch (javax.net.ssl.SSLException |org.jsoup.UnsupportedMimeTypeException|java.net.SocketTimeoutException|org.jsoup.HttpStatusException UMTE) {
                     System.out.println("\n::ERROR::URL: " + url + "\nInvalid for current programming :: May be pdf formatting\n");
-                    System.out.println("\nTRY DIFFERENT URL (0 to quit, 1 for manual prompt/entry )\n");
+                    System.out.println("\nTRY DIFFERENT URL (0 to quit, 1 for manual prompt/entry, 2 for updated URL )\n");
                     userInput = input.next();
-                    if (userInput.compareTo("0") == 0) { 
-                        found = 1;
-                        pageErrors++;
-                    } 
-                    else{
-                        if(userInput.compareTo("1") == 0){
-                            companies[i]=manualEdit(companies[i]);
-                            found=1;
+                    while (loop==true){
+                        loop=false;
+                        if (userInput.equalsIgnoreCase("0")){ /**nothing**/ } 
+                        else{
+                            if(userInput.equalsIgnoreCase("1")){ companies[i]=manualEdit(companies[i]); }
+                            else {
+                                if (userInput.equalsIgnoreCase("2")){
+                                    decrementI=true;
+                                    System.out.println("Please Enter updated URL:");
+                                    userInput = input.next();
+                                    companies[i].updatedURL=userInput;
+                                }
+                                else{
+                                    System.out.println("Incorrect input, enter 0, 1, or 2");
+                                    loop=true;
+                                }
+                            }
                         }
-                        else {url = userInput;}
                     }
                 }
             
 //-------------end loop for finding all employees :: check for adds---------------------------------------------------------
             companies[i].printCompany();    //PRINT ALL COMPANY INFO
-            String edit="  ";                     //USED TO STAY IN EDITTING LOOP
             //input.nextLine();//clear cache
-            System.out.println("Would you like to edit? use number:(y=1/n=0)");
-            edit=input.next();
-            if (edit.compareToIgnoreCase("1")==0){
-                companies[i]=manualEdit(companies[i]);
+            if (decrementI==false){
+                System.out.println("Would you like to edit? use number:(y=1/n=0) or try different url(2)");
+                userInput=input.next();
+                while (loop==true){
+                    loop=false;
+                    if (userInput.equalsIgnoreCase("0")){ /**nothing**/ } 
+                    else{
+                        if(userInput.equalsIgnoreCase("1")){companies[i]=manualEdit(companies[i]);}
+                        else {
+                            if (userInput.equalsIgnoreCase("2")){
+                                decrementI=true;
+                                System.out.println("Please Enter updated URL:");
+                                userInput = input.next();
+                                companies[i].updatedURL=userInput;
+                            }
+                            else{
+                                System.out.println("Incorrect input, enter 0, 1, or 2");
+                                loop=true;
+                            }
+                        }
+                    }
+                }
             }
-            
-            
+            if (decrementI){
+                System.out.println("---New URL---");
+                i--;
+            }
         }
 //------------------------------------------------------------ends company iteration--------------------------------------
-       
-        
-        
-        
         System.out.println("\n\n TOTAL EMPLOYEES LISTED: "+totalEmployees);
         System.out.println("FOUND EMPLOYEES: "+foundEmployees+"   with Title: "+foundTitle);
         System.out.println("PAGE ERRORS: "+pageErrors);
@@ -325,7 +338,7 @@ public class Scraper {
         e.original=true;
         String name=e.first+" "+e.last;
         Scanner input = new Scanner(System.in);
-        System.out.println("\nSearching for :: "+name+" : "+e.title);
+        System.out.println("\n\t\tSearching for :: "+name+" : "+e.title+"\n");
         //find first name first
         for (i=0;i<arraySize;i++){
             //System.out.println("i: "+i+"::"+a[i]);
@@ -348,7 +361,7 @@ public class Scraper {
                     else{
                         //must add catch for not the name we are looking for (Ann != Annual)
                         String temp=" ";
-                        input.next();
+                        input.nextLine();
                         System.out.println("Found first name:"+e.first+" at ["+i+"]: \""+a[i]+"\n"
                                 + "Do any of the following replace last name(\""+e.last+"\"): \n"+a[i]+"\n"+a[i-1]+"\n"+a[i+1]+
                                 "\ntype 0 if incorrect find");
@@ -358,6 +371,7 @@ public class Scraper {
                             //continue thru file, false positive was detected
                         }
                         else{
+                            startInd=i;
                             foundName=1;
                             e.onPage="Yes";
                             e.last=temp;
@@ -386,6 +400,7 @@ public class Scraper {
                             //continue thru file, false positive was detected
                         }
                         else{
+                            startInd=i;
                             foundName=1;
                             e.onPage="Yes";
                             e.last=temp;
@@ -406,6 +421,7 @@ public class Scraper {
             inTryCatch=1;
                 //FOUND NAME LOOK FOR TITLE
                 //must exit if found title -- make inTryCatch=0
+                
             if (                            a[startInd].contains(e.title))  {   e.IndexNameToTitle=0;   inTryCatch=0; }
             if ( startInd+1<=a.length &&    a[startInd+1].contains(e.title)){   e.IndexNameToTitle=1;   inTryCatch=0; }    
             if ( startInd+2<=a.length &&    a[startInd+2].contains(e.title)){   e.IndexNameToTitle=2;   inTryCatch=0; }
@@ -444,8 +460,6 @@ if ( startInd+3<=a.length){  System.out.println("\t"+(startInd+3)+" : "+a[startI
             }      
      return e;
     }
-
-    
     public static comp findAdds(int index, comp c){
         comp company=c;
         //list all keywords that would designate an add
@@ -458,7 +472,6 @@ if ( startInd+3<=a.length){  System.out.println("\t"+(startInd+3)+" : "+a[startI
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   
     }
-   
     private static comp manualEdit(comp c) {
         //printout all relevant information
         c.printCompany();
