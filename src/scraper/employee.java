@@ -3,6 +3,7 @@ package scraper;
 
 public class employee {
     boolean original=true;
+    String bio=null;
     String onPage="No";
     String contactID="000";
     String first="first";
@@ -13,7 +14,6 @@ public class employee {
     public void printEmployeeShort(){
         System.out.println("---"+this.first+" "+this.last+"  Title: "+this.title+" ");
         }
-
     
     public void printEmployee(){
         String found;
@@ -30,6 +30,8 @@ public class employee {
         if (this.onPage.equalsIgnoreCase("Yes")) {found="--FOUND--";}
         else                                {found="NOT Found";}
         System.out.println(this.first+" "+this.last+"\tTitle: "+this.title+" "+orig+" "+found+" Index name to title:"+this.IndexNameToTitle);
-        
+        if (this.bio!=null){
+            System.out.println("Bio: "+this.bio);
+        }
     }
 }

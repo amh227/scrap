@@ -18,7 +18,7 @@ import org.jsoup.select.Elements;
 
 public class Scraper {
     public static void main(String[] args) throws IOException {
-        boolean decrementI, loop=false;
+        boolean decrementI, loop;
         comp[] companies = new comp[120];
         //Start with 100 potential arrayists for all the possible company names
         String file, lastCompanyID = "-", tempFirst, tempLast, tempTitle , tempContactID, tempCompanyID;
@@ -225,10 +225,8 @@ public class Scraper {
             }
             try {
                 Document doc = Jsoup.connect(url).get();
-                
                 Element taglang = doc.select("html").first();
                 language = (taglang.attr("lang"));
-                
                 //trying to iterate through all strings of document individually    
                 Elements elements = doc.body().select("*");
                 String[] strArr = new String[10000];
@@ -264,11 +262,12 @@ public class Scraper {
                     System.out.println("\n::ERROR::URL: " + url + "\nInvalid for current programming :: May be pdf formatting\n");
                     System.out.println("\nTRY DIFFERENT URL (0 to quit, 1 for manual prompt/entry, 2 for updated URL )\n");
                     userInput = input.next();
+                    loop=true;
                     while (loop==true){
                         loop=false;
                         if (userInput.equalsIgnoreCase("0")){ /**nothing**/ } 
                         else{
-                            if(userInput.equalsIgnoreCase("1")){ companies[i]=manualEdit(companies[i]); }
+                            if(userInput.equalsIgnoreCase("1")){ companies[i].editEmployee(); }
                             else {
                                 if (userInput.equalsIgnoreCase("2")){
                                     decrementI=true;
@@ -289,13 +288,20 @@ public class Scraper {
             companies[i].printCompany();    //PRINT ALL COMPANY INFO
             //input.nextLine();//clear cache
             if (decrementI==false){
-                System.out.println("Would you like to edit? use number:(y=1/n=0) or try different url(2)");
-                userInput=input.next();
+                System.out.println("Would you like to edit?\n"
+                        + "  1. Edit\n"
+                        + "  2. Update URL\n"
+                        + "  0. Continue to Next");
+                
+                loop=true;
                 while (loop==true){
+                    userInput=input.next();
                     loop=false;
-                    if (userInput.equalsIgnoreCase("0")){ /**nothing**/ } 
+                    if (userInput.equalsIgnoreCase("0")){ 
+                     
+                    } 
                     else{
-                        if(userInput.equalsIgnoreCase("1")){companies[i]=manualEdit(companies[i]);}
+                        if(userInput.equalsIgnoreCase("1")){companies[i].editEmployee();}
                         else {
                             if (userInput.equalsIgnoreCase("2")){
                                 decrementI=true;
@@ -307,6 +313,7 @@ public class Scraper {
                                 System.out.println("Incorrect input, enter 0, 1, or 2");
                                 loop=true;
                             }
+                            
                         }
                     }
                 }
@@ -343,8 +350,7 @@ public class Scraper {
         for (i=0;i<arraySize;i++){
             //System.out.println("i: "+i+"::"+a[i]);
             if (a[i].contains(e.first+" ")){//found first name
-                if (a[i].contains(e.last)){//contains full name
-                    //System.out.println("found full name: "+a[i]+ " at index "+i);
+                if (a[i].contains(e.last)){
                     e.onPage="Yes";
                     foundName=1;
                     startInd=i;
@@ -457,7 +463,14 @@ if ( startInd+3<=a.length){  System.out.println("\t"+(startInd+3)+" : "+a[startI
                     e.title=input.next();}
                     return e;
                 }
-            }      
+            }
+        //look for bio
+        if (a[startInd+1].contains(name)&&a[startInd+1].length()>20){
+            e.bio=a[startInd+1];
+        }
+        if (a[startInd+2].contains(name)&&a[startInd+2].length()>20){
+            e.bio=a[startInd+2];
+        }
      return e;
     }
     public static comp findAdds(int index, comp c){
@@ -472,11 +485,5 @@ if ( startInd+3<=a.length){  System.out.println("\t"+(startInd+3)+" : "+a[startI
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   
     }
-    private static comp manualEdit(comp c) {
-        //printout all relevant information
-        c.printCompany();
-        System.out.println("Which emplyee would you like to edit (or type \"add\")");
-        
-    return c;
-    }
+
 }

@@ -10,6 +10,10 @@ package scraper;
  * @author angie
  */
 public class CollegeID {
-    String name;
-    String IDnum;
+    String[] name;
+    String[] IDnum;
+    //
+    
+    
+    
 }
